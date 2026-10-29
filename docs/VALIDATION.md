@@ -42,4 +42,8 @@ Le workflow manuel **Tester Telegram** a été publié au commit `3389583` ; [CI
 
 Depuis, le bot a été créé et les secrets enregistrés. [Test réel 40804020828](https://github.com/werti4/uniqlo-alert/actions/runs/40804020828) terminé avec succès ; le 29 octobre 2026, l’utilisateur confirme avoir reçu le message « UNIQLO Alert — message de test ». Liaison GitHub Actions → conversation privée Telegram vérifiée, sans accès aux favoris ni modification de l’historique.
 
-Reste à confirmer : variable Actions `UA_TELEGRAM_ENABLED=true`, scan avec Telegram activé, puis livraison d’une véritable alerte de baisse (ou d’une alerte déjà en attente). La réussite du test ne prouve pas que cette activation automatique a été enregistrée. Aucun secret ni identifiant personnel consigné dans ce document.
+Activation maintenant confirmée : [scan 40804764809](https://github.com/werti4/uniqlo-alert/actions/runs/40804764809), étape « Vérifier la configuration — Telegram activé », scanner et résumé réussis. Reste à constater la livraison d’une véritable alerte de baisse (ou d’une alerte déjà en attente). Aucun secret ni identifiant personnel consigné dans ce document.
+
+Modification de diagnostic publiée au commit `9fe139e` : statut Telegram visible dans le nom de l’étape Actions et résumé positif lorsque les identifiants sont présents. Tests locaux : résumé activé/désactivé sans fuite de secrets, 32 tests Python et 19 tests JavaScript réussis. La cadence, les favoris, la clé et les règles de baisse sont inchangés.
+
+[CI 40804764814](https://github.com/werti4/uniqlo-alert/actions/runs/40804764814) réussie pour le commit `9fe139e`, incluant les suites et le contrôle navigateur.
