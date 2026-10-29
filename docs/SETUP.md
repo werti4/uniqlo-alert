@@ -8,7 +8,7 @@ Ouvrir `chrome://extensions`, activer **Mode développeur**, puis **Charger l'ex
 
 Pour une installation depuis les sources, exécuter d'abord `python3 tools/generate_icons.py` à la racine du dépôt téléchargé, puis sélectionner le dossier `extension/`. L'artefact Actions contient déjà les icônes générées. Après une mise à jour des fichiers, cliquer sur **Actualiser** dans `chrome://extensions`.
 
-### La petite fenêtre UNIQLO (version 1.1.1)
+### La petite fenêtre UNIQLO
 
 Après une mise à jour, cliquez sur **Actualiser** dans `chrome://extensions`, puis rechargez les pages UNIQLO déjà ouvertes. La fenêtre apparaît automatiquement en bas à droite sur `www.uniqlo.com`. Sur une fiche **UNIQLO France**, son bouton ajoute ou retire l’article ouvert en un clic. Sur les autres pages, elle conserve l’aperçu et l’accès au tableau de bord. Aucun prix n’est inventé avant un relevé du scanner.
 
@@ -42,7 +42,9 @@ Ouvrir les [secrets Actions du dépôt](https://github.com/werti4/uniqlo-alert/s
 
 La clé doit être identique des deux côtés. Ne pas la remplacer après publication des favoris : une clé différente ne peut pas lire les anciens relevés. Elle est également nécessaire pour configurer un deuxième appareil.
 
-## 4. Configurer Telegram sur iPhone
+## 4. Configurer Telegram sur iPhone (facultatif, plus tard)
+
+Pour démarrer les relevés sans Telegram, passez directement à l’étape 5.
 
 1. Installer Telegram et autoriser les notifications dans **Réglages iPhone → Notifications → Telegram**. Vérifier aussi le mode Concentration si les notifications sont silencieuses.
 2. Dans Telegram, ouvrir le compte officiel [@BotFather](https://t.me/BotFather), envoyer `/newbot` et suivre ses instructions.

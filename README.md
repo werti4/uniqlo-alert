@@ -15,7 +15,7 @@ Les couleurs et tailles souhaitées sont des préférences. Le scanner vérifie 
 
 ## État et installation
 
-Le code, les tests et les workflows sont fournis. **La surveillance personnelle doit encore être configurée** : clé de chiffrement, jeton GitHub limité au dépôt et identifiants du bot Telegram. Un workflow qui attend ces éléments ne constitue pas un scan réussi.
+Le code, les tests et les workflows sont publiés. L’installation et la configuration sont propres à chaque utilisateur : jeton limité au dépôt dans Chrome, même clé dans Chrome et le secret Actions, puis favoris publiés. **Telegram est facultatif et peut être configuré plus tard.** L’état vérifié de ce projet est consigné dans [le contexte de référence](docs/PROJECT_CONTEXT.md). Un workflow qui ignore le scan faute de configuration ne constitue pas un relevé réussi.
 
 1. Ouvrir l'onglet [Actions](https://github.com/werti4/uniqlo-alert/actions) et la dernière exécution réussie de **Vérifier le projet**.
 2. Télécharger l'artefact `uniqlo-alert-extension` et le décompresser. S'il contient un second fichier `uniqlo-alert-extension.zip`, le décompresser également. Ouvrir `chrome://extensions`.
@@ -53,6 +53,9 @@ Le premier relevé ne génère pas d'alerte. Un article déjà en promotion lors
 | `tests/` | Régressions Python, JavaScript et compatibilité du chiffrement |
 | `docs/PROJECT_CONTEXT.md` | Périmètre, décisions et point de reprise |
 | `docs/SETUP.md` | Installation, secrets et dépannage |
+| `docs/DEVELOPMENT.md` | Fichiers à modifier, tests et livraison |
+| `docs/VALIDATION.md` | Preuves récentes et limites |
+| `docs/HISTORY.md` | Anciennes étapes archivées |
 
 ## Validation locale
 
