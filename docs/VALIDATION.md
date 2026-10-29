@@ -47,3 +47,7 @@ Activation maintenant confirmée : [scan 40804764809](https://github.com/werti4/
 Modification de diagnostic publiée au commit `9fe139e` : statut Telegram visible dans le nom de l’étape Actions et résumé positif lorsque les identifiants sont présents. Tests locaux : résumé activé/désactivé sans fuite de secrets, 32 tests Python et 19 tests JavaScript réussis. La cadence, les favoris, la clé et les règles de baisse sont inchangés.
 
 [CI 40804764814](https://github.com/werti4/uniqlo-alert/actions/runs/40804764814) réussie pour le commit `9fe139e`, incluant les suites et le contrôle navigateur.
+
+## Limite actuelle : calendrier non démontré
+
+Vérification à la suite de la capture utilisateur : 7 exécutions dans l’historique public de Scanner UNIQLO, toutes par commit ou lancement manuel, aucune par `schedule`. Workflow déclaré actif, défaut `main`, dépôt non forké et cron `2-57/5 * * * *` présent sur `main`. Dernière exécution visible : `40805039423` (publication de favoris). La cadence automatique toutes les cinq minutes reste **non vérifiée**, cause de l’absence de déclenchements planifiés non établie. Les succès précédents valident seulement les déclencheurs et étapes effectivement observés.

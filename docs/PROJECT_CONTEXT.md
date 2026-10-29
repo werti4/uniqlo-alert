@@ -9,7 +9,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 - Petite fenêtre automatique sur `www.uniqlo.com`, réductible, et popup depuis l’icône Chrome.
 - Ajout/retrait en un clic de l’article ouvert, sur une fiche France ; aperçu favoris/baisses/alertes et accès au tableau de bord complet.
 - 50 favoris maximum. Les changements sont locaux jusqu’à **Publier les favoris**. Pas de publication automatique implicite.
-- GitHub Actions demande un scan toutes les **5 minutes** (`2-57/5 * * * *`), ainsi qu’après publication des favoris. Retards et omissions possibles ; aucun temps réel garanti.
+- GitHub Actions demande un scan toutes les **5 minutes** (`2-57/5 * * * *`), ainsi qu’après publication des favoris. Retards et omissions possibles ; aucun temps réel garanti. À la dernière vérification, aucun lancement `schedule` observé (voir diagnostic ci-dessous).
 - **Test Telegram reçu par l’utilisateur** ; notifications automatiques facultatives, activation `UA_TELEGRAM_ENABLED=true` confirmée par GitHub dans le scan 40804764809. Ne pas les demander comme préalable aux relevés.
 - Hors périmètre actuel : tout le catalogue, achat automatique, connexion UNIQLO, hébergement payant, contournement de protections, autres projets personnels.
 
@@ -92,3 +92,9 @@ Validation locale de la préparation : 32 tests Python (dont 5 tests du diagnost
 Diagnostic publié sur `main` au commit `3389583`. [CI 40802430270 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40802430270), incluant les 32 tests Python, 19 tests JS, le contrôle navigateur et le paquet. Le workflow manuel [Tester Telegram](https://github.com/werti4/uniqlo-alert/actions/workflows/test-telegram.yml) est disponible ; il a maintenant été lancé avec succès avec les secrets réels. Ne pas confondre ce test manuel avec la livraison automatique d’une alerte de baisse.
 
 Activation automatique vérifiée le 29 octobre 2026 : [scan 40804764809](https://github.com/werti4/uniqlo-alert/actions/runs/40804764809) avec statut explicite « Telegram activé », étape scanner et résumé réussis. Le workflow affiche désormais ce statut résolu depuis la variable Actions et indique dans son résumé si les identifiants sont présents. Aucun changement de prix fictif ni nouvelle clé créés. La première livraison d’une véritable alerte reste à constater ; les compteurs privés du scan ne sont pas accessibles à l’agent.
+
+## Déclenchements planifiés non observés
+
+Après la capture utilisateur montrant uniquement des commits et lancements manuels, vérification directe de GitHub : workflow existant et actif (`workflowActive: true`), dépôt non forké, branche par défaut `main`, cron `2-57/5 * * * *` bien publié sur cette branche. L’historique public complet affichait **7 exécutions**, toutes par push ou lancement manuel, aucune par `schedule`. Dernier scan visible : `40805039423`, push de favoris `b96abed`, le 29 octobre à 02:13:06 UTC (03:13:06 Paris).
+
+La réussite des scans déclenchés par push/manuellement et l’activation Telegram ne prouvent donc pas que le calendrier s’exécute. Cause non établie ; la documentation GitHub autorise retards/omissions, mais ce n’est pas une explication vérifiée pour ce dépôt. Ne pas annoncer une cadence automatique opérationnelle avant un lancement planifié réel. Le cron valide n’a pas été modifié sans diagnostic.
