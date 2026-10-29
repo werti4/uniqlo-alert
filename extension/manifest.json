@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "UNIQLO Alert · Mes favoris",
+  "version": "1.0.0",
+  "description": "Vos favoris UNIQLO France, leurs prix et votre surveillance GitHub Actions. Notifications sur iPhone via Telegram.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["https://api.github.com/*"],
+  "background": {"service_worker": "background.js", "type": "module"},
+  "action": {"default_title": "Ouvrir UNIQLO Alert", "default_icon": {"16": "icons/icon16.png", "32": "icons/icon32.png", "128": "icons/icon128.png"}},
+  "icons": {"16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png"},
+  "options_page": "app.html",
+  "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self' https://api.github.com; img-src 'self' data: https://image.uniqlo.com; style-src 'self'"}
+}
