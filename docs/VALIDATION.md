@@ -6,8 +6,8 @@
 
 | Contrôle | Preuve disponible | Limite |
 | --- | --- | --- |
-| Tests Python | 32 réussis localement et en CI après ajout du diagnostic Telegram | Fixtures synthétiques, pas une preuve de collecte réelle |
-| Tests JavaScript | 19 réussis localement ; CI réussie | Incluent chiffrement Python/JS, concurrence et protection des données |
+| Tests Python | 51 réussis localement et dans le job CI du catalogue Cloudflare | Fixtures synthétiques, pas une preuve de collecte réelle |
+| Tests JavaScript | 27 réussis localement et dans le job CI du catalogue Cloudflare | Incluent chiffrement Python/JS, concurrence et protection des données |
 | Popup sous CSP | Test `tools/check_quick_ui.cjs` réussi localement et en CI | Vrai HTML et CSP, API Chrome simulées ; installation réelle interdite dans le cloud |
 | Régression détectée | Le test échoue sur une copie de 1.1.0, réussit sur le correctif | Le défaut historique venait du CSS inline bloqué |
 | Paquet | Icônes générées et artefact publié, 13 fichiers autorisés | Artefact à durée de conservation de 7 jours |
@@ -79,3 +79,5 @@ Préparation webhook publiée (`5c74690`, ajustement de confidentialité `e3d18c
 ## Catalogue Cloudflare de toutes les commandes
 
 51 tests Python et 27 tests Node réussis localement. Nouveau contrôle : chaque nom du catalogue partagé est reconnu par Cloudflare et possède un traitement compatible ; un traitement absent est rejeté. La cible et la procédure des futures commandes sont formalisées dans TELEGRAM_COMMANDS.md et AGENTS.md. Services simulés : aucun déploiement ni commande réelle validés.
+
+Contrat et catalogue des commandes publiés au commit `128fff1`. [Job CI 40853282759](https://github.com/werti4/uniqlo-alert/actions/runs/40853282759) : toutes les étapes, y compris tests et contrôle navigateur, terminées avec succès. Catalogue inclus dans le Worker lors du dry-run Wrangler. Cloudflare reste non déployé : aucun service actif ni réponse réelle supplémentaire annoncés.
