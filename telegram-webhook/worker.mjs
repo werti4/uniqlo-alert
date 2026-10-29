@@ -44,15 +44,17 @@ export class TelegramInbox {
       method: 'POST', signal: AbortSignal.timeout(6000),
       headers: {'Authorization': `Bearer ${this.env.GITHUB_DISPATCH_TOKEN}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json', 'User-Agent': 'UniqloAlertWebhook'},
       body: JSON.stringify({ref: this.env.GITHUB_BRANCH || 'main'})
-    });
+    }).catch(() => { throw Error('dispatch unavailable'); });
     if (response.status !== 204) throw Error('dispatch refused');
   }
   async receipt(command) {
+    try {
     const response = await fetch(`https://api.telegram.org/bot${this.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST', signal: AbortSignal.timeout(6000), headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({chat_id: this.env.TELEGRAM_CHAT_ID, text: command === '/scan' ? '📥 Demande /scan reçue. En attente de prise en charge par GitHub ; le bot confirmera « Scan en cours » au démarrage.' : '📥 Commande /logs reçue. Récupération du diagnostic demandée à GitHub.'})
     });
     const result = await response.json(); if (!response.ok || result.ok !== true) throw Error('receipt refused');
+    } catch { throw Error('receipt unavailable'); }
   }
   async fetch(request) {
     return this.ctx.blockConcurrencyWhile(async () => {
