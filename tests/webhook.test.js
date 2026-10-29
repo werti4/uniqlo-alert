@@ -41,3 +41,29 @@ test('a failed dispatch leaves a durable command and can be retried',async()=>{
   assert.equal(ctx.data.get('queue')[0].id,5);
  }finally{globalThis.fetch=original;}
 });
+
+test('hourly cron dispatches scanner once per confirmed hour without Telegram messages',async()=>{
+ const original=globalThis.fetch,requests=[];const ctx=context();const inbox=new TelegramInbox(ctx,env);
+ const bindings={...env,HOURLY_SCAN_ENABLED:'true',INBOX:{idFromName:()=>1,get:()=>inbox}};
+ globalThis.fetch=async(url,init)=>{requests.push({url,body:JSON.parse(init.body)});return new Response(null,{status:204});};
+ try{
+  const event={scheduledTime:Date.UTC(2026,9,29,12,17)};
+  await worker.scheduled(event,bindings);await worker.scheduled(event,bindings);
+  assert.equal(requests.length,1);assert.match(requests[0].url,/workflows\/scan\.yml\/dispatches$/);
+  assert.deepEqual(requests[0].body,{ref:'main'});
+  await worker.scheduled({scheduledTime:event.scheduledTime+3600000},bindings);assert.equal(requests.length,2);
+ }finally{globalThis.fetch=original;}
+});
+test('hourly switch is explicit and public HTTP requests cannot launch hourly scans',async()=>{
+ const bindings={...env,HOURLY_SCAN_ENABLED:'false',INBOX:{idFromName:()=>{throw Error('must not dispatch');}}};
+ await worker.scheduled({scheduledTime:1},bindings);
+ assert.equal((await worker.fetch(new Request('https://example/hourly',{method:'POST',body:'{}',headers:{'X-Bridge-Secret':'synthetic'}}),bindings)).status,404);
+});
+test('refused hourly dispatch does not record a successful hour',async()=>{
+ const original=globalThis.fetch;const ctx=context();const inbox=new TelegramInbox(ctx,env);
+ globalThis.fetch=async()=>new Response(null,{status:403});
+ try{
+  await assert.rejects(inbox.fetch(new Request('https://inbox/hourly',{method:'POST',body:JSON.stringify({hour:42})})));
+  assert.equal(ctx.data.get('lastHourlyDispatch'),undefined);
+ }finally{globalThis.fetch=original;}
+});

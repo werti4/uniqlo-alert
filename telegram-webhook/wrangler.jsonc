@@ -3,6 +3,28 @@
   "main": "worker.mjs",
   "compatibility_date": "2025-09-01",
   "workers_dev": true,
-  "durable_objects": {"bindings": [{"name": "INBOX", "class_name": "TelegramInbox"}]},
-  "migrations": [{"tag": "v1", "new_sqlite_classes": ["TelegramInbox"]}]
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "INBOX",
+        "class_name": "TelegramInbox"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "TelegramInbox"
+      ]
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "17 * * * *"
+    ]
+  },
+  "vars": {
+    "HOURLY_SCAN_ENABLED": "false"
+  }
 }

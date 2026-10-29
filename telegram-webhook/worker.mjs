@@ -16,6 +16,13 @@ export function commandOf(update, env) {
   return {id: update.update_id, command: '/' + match[1].toLowerCase()};
 }
 export default {
+  async scheduled(event, env) {
+    if (env.HOURLY_SCAN_ENABLED !== 'true') return;
+    const inbox = env.INBOX.get(env.INBOX.idFromName('owner'));
+    const hour = Math.floor(event.scheduledTime / 3600000);
+    const response = await inbox.fetch(new Request('https://inbox/hourly', {method: 'POST', body: JSON.stringify({hour})}));
+    if (!response.ok) throw Error('Hourly dispatch not confirmed');
+  },
   async fetch(request, env) {
     const path = new URL(request.url).pathname;
     if (request.method !== 'POST' || !['/telegram', '/pending', '/ack'].includes(path)) return json({ok: false}, 404);
@@ -37,10 +44,11 @@ export default {
 };
 export class TelegramInbox {
   constructor(ctx, env) { this.ctx = ctx; this.env = env; }
-  async dispatch() {
+  async dispatch(workflow = 'telegram-commands.yml') {
+    if (!['telegram-commands.yml', 'scan.yml'].includes(workflow)) throw Error('workflow refused');
     const repo = this.env.GITHUB_REPOSITORY;
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo || '')) throw Error('configuration');
-    const response = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/telegram-commands.yml/dispatches`, {
+    const response = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${workflow}/dispatches`, {
       method: 'POST', signal: AbortSignal.timeout(6000),
       headers: {'Authorization': `Bearer ${this.env.GITHUB_DISPATCH_TOKEN}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json', 'User-Agent': 'UniqloAlertWebhook'},
       body: JSON.stringify({ref: this.env.GITHUB_BRANCH || 'main'})
@@ -60,6 +68,14 @@ export class TelegramInbox {
     return this.ctx.blockConcurrencyWhile(async () => {
       const path = new URL(request.url).pathname;
       const body = await request.json();
+      if (path === '/hourly') {
+        if (!Number.isSafeInteger(body.hour) || body.hour < 0) return json({ok: false}, 400);
+        const lastHour = await this.ctx.storage.get('lastHourlyDispatch') ?? -1;
+        if (body.hour <= lastHour) return json({ok: true});
+        await this.dispatch('scan.yml');
+        await this.ctx.storage.put('lastHourlyDispatch', body.hour);
+        return json({ok: true});
+      }
       let queue = await this.ctx.storage.get('queue') || [];
       if (path === '/pending') return json({commands: queue.slice(0, 3).map(({id, command}) => ({id, command}))});
       if (path === '/ack') {
