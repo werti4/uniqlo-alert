@@ -156,7 +156,7 @@ Les workflows de commandes et de scanner partagent désormais le groupe de concu
 
 ## Réponse sans lancement manuel : mode webhook
 
-Voir [le guide de déploiement Cloudflare](../telegram-webhook/README.md). Le Worker et sa file SQLite sont **déployés**, mais les secrets et le webhook restent à activer. Un compte Workers avec Durable Object SQLite et une configuration de secrets sont nécessaires. L’accusé de réception sera rapide après activation ; l’exécution du scan restera soumise aux délais GitHub Actions. Le Worker inclut aussi un calendrier horaire Cloudflare, à activer explicitement après déploiement selon le guide. L’ancien calendrier GitHub reste distinct tant que sa migration n’a pas été effectuée. Aucun jeton dans le chat.
+Voir [le guide de déploiement Cloudflare](../telegram-webhook/README.md). Le Worker et sa file SQLite sont **déployés**, les cinq secrets requis sont maintenant présents (noms/types vérifiés), mais leur validité, la liaison Actions et le webhook restent à confirmer. Voir [le relais Codex](CODEX_HANDOFF.md). Un compte Workers avec Durable Object SQLite et une configuration de secrets sont nécessaires. L’accusé de réception sera rapide après activation ; l’exécution du scan restera soumise aux délais GitHub Actions. Le Worker inclut aussi un calendrier horaire Cloudflare, à activer explicitement après déploiement selon le guide. L’ancien calendrier GitHub reste distinct tant que sa migration n’a pas été effectuée. Aucun jeton dans le chat.
 
 ## Règle pour les commandes à venir
 

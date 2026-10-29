@@ -1,7 +1,7 @@
 # Telegram via Cloudflare — Worker déployé, activation des accès restante
 
 État vérifié le 29 octobre 2026 : `uniqlo-telegram-webhook` déployé sur
-https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev . Binding `INBOX` → `TelegramInbox`, migration `v1`, stockage **SQLite** confirmé par API. Cron `17 * * * *` enregistré, mais **HOURLY_SCAN_ENABLED=false** : aucun scan demandé par ce cron avant activation. Aucun secret Worker n’est encore configuré. Le webhook Telegram n’a pas été enregistré par cette tâche.
+https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev . Binding `INBOX` → `TelegramInbox`, migration `v1`, stockage **SQLite** confirmé par API. Cron `17 * * * *` enregistré, mais **HOURLY_SCAN_ENABLED=false** : aucun scan demandé par ce cron avant activation. Dernier contrôle API après saisie utilisateur : les cinq secrets requis sont présents au type `secret_text` ; leur validité et l’égalité du secret partagé avec GitHub restent à vérifier. Ne pas recommencer leur création sans motif. Le webhook Telegram n’a pas été enregistré par cette tâche.
 
 Le connecteur Cloudflare permet upload du Worker, secrets, migrations, bindings, domaine et cron. Son OAuth ne permet pas de lire les abonnements (Billing). Aucun abonnement créé/modifié. Le connecteur GitHub ne gère pas les variables/secrets Actions et ne peut pas créer un PAT personnel. Les secrets Actions existants ne sont pas lisibles en clair. Ces limites nécessitent les saisies masquées ci-dessous ; aucun secret dans une conversation, un commit ou une capture.
 
@@ -22,6 +22,8 @@ Pour actualiser les prix, utiliser `/scan`, en complément du calendrier horaire
 **Toute future commande exige catalogue `commands.json`, routage Cloudflare, traitement, tests, documentation ET redéploiement du Worker. Une modification uniquement dans GitHub est incomplète.** Contrat détaillé : [TELEGRAM_COMMANDS.md](../docs/TELEGRAM_COMMANDS.md).
 
 Les clients Python envoyant des requêtes au Worker utilisent `User-Agent: UniqloAlertBridge/1.0`. Le User-Agent par défaut de urllib a déclenché un refus Cloudflare 1010 lors du diagnostic. [Cloudflare recommande un identifiant d’application explicite](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/) sur workers.dev ; ne pas retirer cet en-tête du lecteur Actions ni du script de configuration. La livraison depuis les serveurs Telegram reste à valider séparément.
+
+Relais courant pour Codex : [CODEX_HANDOFF.md](../docs/CODEX_HANDOFF.md). Les étapes ci-dessous restent la procédure générale ; les saisies déjà effectuées ne sont pas à répéter par défaut.
 
 ## 1. Vérifier le palier et préparer les deux accès
 

@@ -1,8 +1,8 @@
 # UNIQLO Alert — règles de reprise
 
-Lire `docs/PROJECT_CONTEXT.md`, puis `docs/DEVELOPMENT.md` et les fichiers concernés avant de modifier le projet.
+Pour la reprise de configuration Cloudflare, lire aussi `docs/CODEX_HANDOFF.md`. Lire `docs/PROJECT_CONTEXT.md`, puis `docs/DEVELOPMENT.md` et les fichiers concernés avant de modifier le projet.
 `docs/HISTORY.md` est une archive : ne pas appliquer ses anciens blocages comme état courant.
-**Toute commande Telegram actuelle ou future doit être enregistrée dans `telegram-webhook/commands.json` et intégrée au point d’entrée Cloudflare. Lire `docs/TELEGRAM_COMMANDS.md` avant tout ajout ; une commande uniquement implémentée en Python/Actions est incomplète. GitHub peut exécuter un travail long, mais ne doit pas nécessiter de lancement manuel utilisateur. Worker Cloudflare déployé le 29/10/2026 ; secrets, webhook et dispatch horaire restent à activer selon le contexte courant.**
+**Toute commande Telegram actuelle ou future doit être enregistrée dans `telegram-webhook/commands.json` et intégrée au point d’entrée Cloudflare. Lire `docs/TELEGRAM_COMMANDS.md` avant tout ajout ; une commande uniquement implémentée en Python/Actions est incomplète. GitHub peut exécuter un travail long, mais ne doit pas nécessiter de lancement manuel utilisateur. Worker Cloudflare déployé le 29/10/2026 ; les cinq secrets Worker sont présents (noms/types vérifiés), mais leur validité, la liaison GitHub, le webhook et le dispatch horaire restent à confirmer selon le contexte courant.**
 
 Le code et les résultats vérifiés priment sur un ancien message de conversation.
 

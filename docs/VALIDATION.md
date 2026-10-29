@@ -2,9 +2,17 @@
 
 État consolidé le 29 octobre 2026 (Europe/Paris). Les anciennes validations et leurs limites initiales sont conservées dans [HISTORY.md](HISTORY.md). Ce document ne constitue pas une nouvelle exécution des tests.
 
+## Contrôle après saisie des secrets — relais Codex du 29 octobre 2026
+
+API Cloudflare consultée sans lecture de valeurs : WEBHOOK_SECRET, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, BOT_USERNAME, GITHUB_DISPATCH_TOKEN tous présents au type secret_text. Secret supplémentaire UA_TELEGRAM_WEBHOOK_SECRET côté Cloudflare, inutilisé par le Worker. GITHUB_REPOSITORY=werti4/uniqlo-alert, GITHUB_BRANCH=main, HOURLY_SCAN_ENABLED=false ; binding INBOX et cron 17 * * * * confirmés.
+
+La présence des noms ne valide ni les valeurs, ni les droits/expiration du PAT, ni l’identité Telegram, ni l’égalité du secret commun avec Actions. Configuration GitHub annoncée faite par l’utilisateur, non vérifiable via le connecteur. Renouvellement du jeton signalé par BotFather, copie effective dans les deux services non confirmée. Aucun webhook enregistré, scan réel ou message de test lancé par l’agent pendant ce relais. getWebhookInfo et file authentifiée restent à contrôler. Voir [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
+
+[CI finale du code 1296f30, 40858332943](https://github.com/werti4/uniqlo-alert/actions/runs/40858332943) réussie, incluant tests Python/Node, popup CSP et paquet. Cette mise à jour est documentaire : contrôle du diff et des liens uniquement, sans nouvelle exécution applicative.
+
 ## Premier déploiement Cloudflare — 29 octobre 2026, 11:20 Paris
 
-Worker `uniqlo-telegram-webhook`, URL https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev, version `5a4568a5-a171-4e64-8e1d-48fef52924f7` déployée à 100 %. API Cloudflare : migration v1, binding INBOX → TelegramInbox, namespace SQLite 84ca5eaff5764f178aa74c2854fd70be, route workers.dev active et cron 17 * * * * confirmés. Variables dépôt/branche présentes ; HOURLY_SCAN_ENABLED=false. Liste des secrets Worker vide. Aucun abonnement créé/modifié ; lecture de facturation refusée par OAuth, palier Free à contrôler dans le tableau de bord.
+Worker `uniqlo-telegram-webhook`, URL https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev, version `5a4568a5-a171-4e64-8e1d-48fef52924f7` déployée à 100 %. API Cloudflare : migration v1, binding INBOX → TelegramInbox, namespace SQLite 84ca5eaff5764f178aa74c2854fd70be, route workers.dev active et cron 17 * * * * confirmés. Variables dépôt/branche présentes ; HOURLY_SCAN_ENABLED=false. Au premier déploiement, liste des secrets Worker vide ; cette observation historique est remplacée par le contrôle de saisie ci-dessous. Aucun abonnement créé/modifié ; lecture de facturation refusée par OAuth, palier Free à contrôler dans le tableau de bord.
 
 63 tests Python et 27 tests JS réussis ; Wrangler 4.155.0 dry-run réussi. Régression couverte : accusé avant dispatch GitHub, conservation de la commande après refus de dispatch et accusé non répété lors du réessai. Les API Telegram/GitHub sont simulées. Aucun scan ni message réel déclenché par l’agent. Extension, clé et données chiffrées non modifiées.
 
