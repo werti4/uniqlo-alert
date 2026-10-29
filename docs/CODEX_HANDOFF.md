@@ -1,5 +1,15 @@
 # Reprise Codex — configuration Cloudflare / Telegram
 
+## Dernier contrôle après « C’est corrigé » — 29 octobre 2026, 12:58 Paris
+
+La relance de 40867953571 a encore trouvé un format invalide. Pour écarter un ancien état de run, une exécution **neuve** [40869512253](https://github.com/werti4/uniqlo-alert/actions/runs/40869512253), code `197bbcb`, a été lancée avec un diagnostic limité à des catégories, sans afficher longueur, contenu ou caractère du secret. Résultat exact : **secret Actions UA_TELEGRAM_WEBHOOK_SECRET : caractères non autorisés**. Le contrôle est arrêté avant tout appel HTTP Worker/Telegram, setWebhook non exécuté. Ne plus relancer tant que cette saisie n’est pas corrigée dans GitHub ; ne pas assouplir le format pour contourner le problème.
+
+Intervention iPhone : GitHub Settings → Secrets and variables → Actions → Secrets → **UA_TELEGRAM_WEBHOOK_SECRET** → crayon → saisir un code aléatoire de 64 lettres/chiffres uniquement, sans guillemets, espace, ponctuation ou retour à la ligne → Update secret. Cloudflare **WEBHOOK_SECRET** doit contenir exactement la même valeur. Ce n’est pas TELEGRAM_BOT_TOKEN et ce n’est pas le secret supplémentaire UA_TELEGRAM_WEBHOOK_SECRET dans Cloudflare. Ne communiquer aucune valeur en chat. Si l’utilisateur a seulement changé Cloudflare, il reste impérativement la saisie GitHub.
+
+SETUP_ENABLED a été refermé à false après l’essai ; HOURLY_SCAN_ENABLED et HOURLY_VERIFY_ENABLED restent false, les six noms de secrets sont conservés. Aucun scan forcé, aucun message de test, aucun ancien calendrier retiré. Pas de contrôle horaire naturel planifié tant que l’activation n’a pas réussi. Après correction, rouvrir temporairement l’activation avec une échéance future et utiliser une exécution fraîche du seul workflow de configuration. Le déclencheur push temporaire de diagnostic est retiré après l’essai ; garder workflow_dispatch par défaut en lecture seule.
+
+Tests du diagnostic : 68 Python et 33 Node réussis, dont un test vérifiant les trois catégories de format sans divulgation. Aucun changement du Worker, du scanner, de l’extension, des favoris ni de la clé AES dans cette relance ; seuls la procédure Actions, son diagnostic et le contexte ont évolué.
+
 ## État courant — activation iPhone bloquée par le format du secret GitHub
 
 Le 29 octobre 2026, reprise avec connecteur Cloudflare disponible (le blocage d’accès d’une autre conversation ne s’applique pas ici). Worker existant mis à jour sans recréer de ressources ni secrets. Version de code de configuration `8ee90bcf-d183-4ae2-ac30-2d8c577d4686`, migration v1/INBOX et les six noms de secrets conservés (cinq requis + extra inutilisé).
