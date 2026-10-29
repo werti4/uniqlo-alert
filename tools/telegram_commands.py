@@ -191,7 +191,7 @@ def bridge(url, secret, method, payload):
     if host.scheme != 'https' or not host.netloc or host.username or host.password or host.query or host.fragment or not secret:
         raise ValueError('Configuration webhook invalide.')
     request = urllib.request.Request(url.rstrip('/') + '/' + method, method='POST',
-        data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json', 'X-Bridge-Secret': secret})
+        data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json', 'X-Bridge-Secret': secret, 'User-Agent': 'UniqloAlertBridge/1.0'})
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
             data = json.load(response)

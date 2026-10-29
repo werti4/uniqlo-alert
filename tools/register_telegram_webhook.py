@@ -40,7 +40,7 @@ def main():
             return 0 if confirmed else 1
         secret=getpass.getpass('WEBHOOK_SECRET déjà enregistré dans Cloudflare et GitHub : ').strip()
         if not re.fullmatch(r'[A-Za-z0-9_-]{32,256}',secret):raise ValueError()
-        req=urllib.request.Request(url+'/pending',method='POST',data=b'{}',headers={'Content-Type':'application/json','X-Bridge-Secret':secret})
+        req=urllib.request.Request(url+'/pending',method='POST',data=b'{}',headers={'Content-Type':'application/json','X-Bridge-Secret':secret,'User-Agent':'UniqloAlertBridge/1.0'})
         with urllib.request.urlopen(req,timeout=20) as response:
             if not isinstance(json.load(response).get('commands'),list):raise ValueError()
         api(token,'setWebhook',{'url':url+'/telegram','secret_token':secret,'allowed_updates':['message'],'max_connections':1,'drop_pending_updates':False})

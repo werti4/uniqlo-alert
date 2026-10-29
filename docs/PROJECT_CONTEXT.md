@@ -74,7 +74,7 @@ Aucune valeur de secret dans le dépôt, les logs, le paquet, les captures parta
 ## Environnement de travail et accès
 
 - Checkout de cette tâche : `/workspace/scratch/6e97d4083c7f/uniqlo-alert`, Python 3.12.14, Node.js 24.22.1. Pas de dépendance npm d’exécution. Les chemins et dépendances de chaque environnement sont à revérifier.
-- HTTPS Git avec l’authentification de plateforme : lecture et push vers ce dépôt ont fonctionné. L’API GitHub via `gh` a renvoyé `Forbidden` dans ce cloud ; les droits/API/réseaux doivent être diagnostiqués par opération.
+- HTTPS Git : fetch fonctionne ; push direct refusé faute d’identifiants dans ce cloud, `gh` non installé. Publication effectuée via le connecteur GitHub (tree/commit puis mise à jour de main avec SHA attendu), sans forcer ni écraser les favoris concurrents. Diagnostiquer les droits par opération.
 - Aucun contrôle du **Chrome personnel** de l’utilisateur disponible dans cette conversation. L’autorisation de l’utilisateur ne crée pas cette capacité. Ne pas prétendre lire sa clé ou agir dans sa session.
 - Le Chromium cloud interdit le chargement réel d’extensions décompressées par politique administrateur. Le test navigateur utilise des pages simulées avec la CSP exacte et les API Chrome simulées.
 - Le dernier accès direct à UNIQLO était bloqué par le proxy cloud (CONNECT 403), avant réponse du site. `www.uniqlo.com` a été ajouté au **brouillon** réseau ; sauvegarde/publication/application à revérifier. Cela concerne l’environnement cloud, pas le réseau des runners Actions.
@@ -96,7 +96,7 @@ Aucune valeur de secret dans le dépôt, les logs, le paquet, les captures parta
 | Secrets Worker | Liste API vide : `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `BOT_USERNAME`, `GITHUB_DISPATCH_TOKEN` restent à saisir |
 | Liaison Actions | `UA_TELEGRAM_WEBHOOK_URL` et `UA_TELEGRAM_WEBHOOK_SECRET` non configurés par cette tâche : connecteur sans capacité de gestion de ces paramètres |
 | Webhook Telegram | Pas enregistré par cette tâche ; `getWebhookInfo` réel non accessible sans le jeton renouvelé |
-| Accès HTTPS depuis ce cloud | Tests sans secret ont reçu un HTTP 503 du proxy en amont, avant réponse exploitable du Worker. Ce résultat ne valide ni n’invalide le routage public ; à confirmer depuis le poste utilisateur |
+| Accès HTTPS depuis ce cloud | Après propagation et User-Agent applicatif : GET / → 404 JSON ; POST /telegram et /pending sans secret → 403 JSON. Routage public et refus des requêtes non authentifiées confirmés, sans commande ni message |
 
 Le connecteur a permis création du sous-domaine workers.dev, publication du module, migration SQLite, liaison, route workers.dev et cron. La consultation des abonnements est refusée (OAuth sans permission Billing). **Aucun abonnement n’a été créé ou modifié.** Le modèle API `standard` ne prouve pas à lui seul le palier Free ; vérifier Workers Free dans le tableau de bord avant activation. L’architecture est compatible avec Free, selon les quotas documentés dans le guide.
 
@@ -106,8 +106,9 @@ Dernière vérification GitHub : scan `40840801906`, 29/10/2026 09:15 Paris, ré
 
 ## Vérifications de cette tâche et activation restante
 
-- 62 tests Python et 27 tests Node réussis, réseau simulé ; Wrangler 4.155.0 `deploy --dry-run` réussi, bundle environ 8,15 Kio. L’accusé Telegram est maintenant envoyé avant l’appel de dispatch GitHub ; une panne de dispatch conserve la commande et ne répète pas l’accusé déjà confirmé.
+- 63 tests Python et 27 tests Node réussis, services simulés ; Wrangler 4.155.0 `deploy --dry-run` réussi, bundle environ 8,15 Kio. L’accusé Telegram est maintenant envoyé avant l’appel de dispatch GitHub ; une panne de dispatch conserve la commande et ne répète pas l’accusé déjà confirmé.
 - Script local : `--check` vérifie getWebhookInfo en lecture seule, erreurs masquées ; `/logs` distingue les dispatchs Cloudflare/manuels des schedules GitHub sans inventer leur origine.
+- HTTP : User-Agent Python par défaut refusé par Cloudflare 1010 ; en-tête `UniqloAlertBridge/1.0` ajouté au bridge Actions et au script local selon la documentation officielle. Routes publiques et contrôle d’accès vérifiés sans secret.
 - API : Worker déployé à 100 %, binding SQLite, migration, variables, cron et domaine vérifiés ; secrets absents explicitement constatés.
 - Aucun scan réel, aucun message de test Telegram, aucune lecture/déchiffrement de favoris, aucune modification d’extension ou de clé effectués.
 - Reste : vérifier le palier Free, saisir les cinq secrets Worker, configurer les deux paramètres de liaison Actions et vérifier `UA_TELEGRAM_ENABLED=true`, attendre la fin de l’ancien getUpdates, enregistrer puis contrôler le webhook. Activer ensuite `HOURLY_SCAN_ENABLED=true` et conserver cette valeur dans wrangler.jsonc avant les prochains déploiements.
@@ -125,3 +126,5 @@ Une future commande exige **catalogue `commands.json` + routage Cloudflare + tra
 Mise à jour : récupérer `origin/main` (publications Chrome possibles), conserver les données chiffrées et `monitor-data`, tester Python/Node et Wrangler dry-run, publier en fast-forward, déployer depuis les mêmes sources, conserver les secrets et la valeur réelle du switch horaire. Voir le guide pour les commandes détaillées.
 
 Retour arrière : désactiver le switch horaire, retirer le webhook sans supprimer les messages en attente, attendre la fin des lecteurs webhook, vider la variable Actions d’URL et rétablir un seul calendrier GitHub si nécessaire. Le code polling reste un fallback, jamais simultané au webhook. Ne pas supprimer le Durable Object ni sa file ; ne pas régénérer la clé des favoris.
+
+Publication initiale `ac89367` : [CI 40857882653](https://github.com/werti4/uniqlo-alert/actions/runs/40857882653) entièrement réussie, tests Python/Node, popup CSP, icônes et paquet. Le correctif User-Agent ultérieur est couvert par les 63 tests Python locaux et une CI distincte.

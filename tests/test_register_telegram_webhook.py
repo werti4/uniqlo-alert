@@ -37,8 +37,9 @@ class SetupTests(unittest.TestCase):
             return INFO if method == 'getWebhookInfo' else True
         response = unittest.mock.MagicMock()
         response.__enter__.return_value.read.return_value = json.dumps({'commands': []}).encode()
-        with patch.object(setup.urllib.request, 'urlopen', return_value=response):
+        with patch.object(setup.urllib.request, 'urlopen', return_value=response) as urlopen:
             code, _ = self.invoke([], api)
+            self.assertEqual(urlopen.call_args.args[0].get_header('User-agent'), 'UniqloAlertBridge/1.0')
         self.assertEqual(code, 0)
         self.assertEqual([method for method, _ in calls], ['setWebhook', 'getWebhookInfo'])
         self.assertEqual(calls[0][1], {'url': URL + '/telegram', 'secret_token': SECRET, 'allowed_updates': ['message'], 'max_connections': 1, 'drop_pending_updates': False})

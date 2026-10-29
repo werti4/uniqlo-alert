@@ -21,6 +21,8 @@ Pour actualiser les prix, utiliser `/scan`, en complément du calendrier horaire
 
 **Toute future commande exige catalogue `commands.json`, routage Cloudflare, traitement, tests, documentation ET redéploiement du Worker. Une modification uniquement dans GitHub est incomplète.** Contrat détaillé : [TELEGRAM_COMMANDS.md](../docs/TELEGRAM_COMMANDS.md).
 
+Les clients Python envoyant des requêtes au Worker utilisent `User-Agent: UniqloAlertBridge/1.0`. Le User-Agent par défaut de urllib a déclenché un refus Cloudflare 1010 lors du diagnostic. [Cloudflare recommande un identifiant d’application explicite](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/) sur workers.dev ; ne pas retirer cet en-tête du lecteur Actions ni du script de configuration. La livraison depuis les serveurs Telegram reste à valider séparément.
+
 ## 1. Vérifier le palier et préparer les deux accès
 
 Dans [le tableau de bord du Worker](https://dash.cloudflare.com/6f5af3971fa548918e6b51e78c26a4c1/workers/services/view/uniqlo-telegram-webhook/production), vérifier que le compte reste sur **Workers Free**. Ne pas sélectionner d’offre payante. L’API a accepté le Worker et le DO SQLite sans souscription ; `usage_model=standard` n’est pas une preuve du palier de facturation.

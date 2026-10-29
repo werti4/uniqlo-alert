@@ -77,6 +77,16 @@ class CommandTests(unittest.TestCase):
         self.assertNotIn('SECRET',str(error.exception))
 
 class WebhookUpdatesTests(unittest.TestCase):
+    def test_bridge_identifies_application_for_workers_dev(self):
+        from tools.telegram_commands import bridge
+        response=unittest.mock.MagicMock()
+        response.__enter__.return_value.read.return_value=b'{"commands": []}'
+        with patch('urllib.request.urlopen',return_value=response) as urlopen:
+            self.assertEqual(bridge('https://example.workers.dev','synthetic','pending',{}),{'commands': []})
+            request=urlopen.call_args.args[0]
+            self.assertEqual(request.get_header('User-agent'),'UniqloAlertBridge/1.0')
+            self.assertEqual(request.get_header('X-bridge-secret'),'synthetic')
+
     def test_trusted_queue_rebuilt_without_freeform_messages(self):
         from tools.telegram_commands import webhook_updates
         updates=webhook_updates({'commands':[{'id':9,'command':'/scan'}]},'123')
