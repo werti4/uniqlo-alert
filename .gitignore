@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
+.private/
+extension/bootstrap.private.json
+extension/icons/*.png
+data/watchlist.json
+data/state.json
+data/*.plain.json
+*.zip
+node_modules/
+test-results/
