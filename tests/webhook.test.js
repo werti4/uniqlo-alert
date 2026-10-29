@@ -84,3 +84,15 @@ test('all catalogue commands are routed by Cloudflare and have receipts',async()
  assert.equal(commandOf(update(1,123,'/unregistered_command'),env),null);
  assert.equal(commandOf(update(1,123,'/constructor'),env),null);
 });
+
+test('natural hourly verification dispatch uses only the read-only setup workflow',async()=>{
+ const original=globalThis.fetch,requests=[];const ctx=context();const inbox=new TelegramInbox(ctx,{...env,HOURLY_VERIFY_ENABLED:'true'});
+ globalThis.fetch=async(url,init)=>{requests.push({url,body:JSON.parse(init.body)});return new Response(null,{status:204});};
+ try{
+  await inbox.fetch(new Request('https://inbox/hourly',{method:'POST',body:'{"hour":42}'}));
+  assert.equal(requests.length,2);assert.match(requests[0].url,/scan\.yml\/dispatches$/);assert.match(requests[1].url,/configure-cloudflare\.yml\/dispatches$/);
+  assert.deepEqual(requests[1].body.inputs,{verify_only:true,hour:'42'});
+  const status=await (await inbox.fetch(new Request('https://inbox/status',{method:'POST',body:'{}'}))).json();
+  assert.deepEqual(status,{lastHourlyDispatch:42,queue_length:0});
+ }finally{globalThis.fetch=original;}
+});

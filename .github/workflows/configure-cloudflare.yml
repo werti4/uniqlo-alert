@@ -1,0 +1,44 @@
+name: Configurer Cloudflare sans scan
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/configure_cloudflare.py'
+      - '.github/workflows/configure-cloudflare.yml'
+  workflow_dispatch:
+    inputs:
+      verify_only:
+        description: Contrôle en lecture seule, sans enregistrement
+        type: boolean
+        default: true
+      hour:
+        description: Heure UTC de dispatch à vérifier (optionnel)
+        type: string
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: cloudflare-setup-${{ github.event_name == 'push' && 'register' || 'verify' }}
+  cancel-in-progress: false
+jobs:
+  configure:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Vérifier les accès et le webhook sans scan ni message
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          UA_TELEGRAM_WEBHOOK_SECRET: ${{ secrets.UA_TELEGRAM_WEBHOOK_SECRET }}
+          UA_TELEGRAM_WEBHOOK_URL: ${{ vars.UA_TELEGRAM_WEBHOOK_URL }}
+          UA_TELEGRAM_ENABLED: ${{ vars.UA_TELEGRAM_ENABLED }}
+          VERIFY_ONLY: ${{ github.event_name != 'push' && inputs.verify_only && 'true' || 'false' }}
+          VERIFY_HOUR: ${{ inputs.hour }}
+        run: python -m tools.configure_cloudflare

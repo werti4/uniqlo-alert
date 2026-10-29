@@ -27,6 +27,8 @@
   "vars": {
     "HOURLY_SCAN_ENABLED": "false",
     "GITHUB_REPOSITORY": "werti4/uniqlo-alert",
-    "GITHUB_BRANCH": "main"
+    "GITHUB_BRANCH": "main",
+    "SETUP_ENABLED": "false",
+    "HOURLY_VERIFY_ENABLED": "false"
   }
 }

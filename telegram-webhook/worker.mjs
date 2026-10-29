@@ -1,4 +1,5 @@
 import {COMMANDS, definition} from './commands.mjs';
+import {configure, configurationStatus} from './setup.mjs';
 // No message contents or credentials are logged. One persistent inbox per bot.
 const json = (data, status = 200) => Response.json(data, {status});
 const equal = async (a, b) => {
@@ -26,13 +27,18 @@ export default {
   },
   async fetch(request, env) {
     const path = new URL(request.url).pathname;
-    if (request.method !== 'POST' || !['/telegram', '/pending', '/ack'].includes(path)) return json({ok: false}, 404);
+    if (path === '/configure' && (env.SETUP_ENABLED !== 'true' || Date.now() >= Date.parse(env.SETUP_EXPIRES_AT || '') || !Number.isFinite(Date.parse(env.SETUP_EXPIRES_AT || '')))) return json({ok:false},404);
+    if (request.method !== 'POST' || !['/telegram', '/pending', '/ack', '/configure', '/configuration-status'].includes(path)) return json({ok: false}, 404);
     const header = path === '/telegram' ? 'X-Telegram-Bot-Api-Secret-Token' : 'X-Bridge-Secret';
     if (!await equal(request.headers.get(header), env.WEBHOOK_SECRET)) return json({ok: false}, 403);
     if (Number(request.headers.get('Content-Length') || 0) > 65536) return json({ok: false}, 413);
     try {
       const raw = await request.text(); if (raw.length > 65536) return json({ok: false}, 413);
       const body = JSON.parse(raw || '{}');
+      if (path === '/configure') {
+        try { return json(await configure(env, body, equal)); } catch (error) { return json({ok:false,error:error.message},409); }
+      }
+      if (path === '/configuration-status') return json(await configurationStatus(env));
       const inbox = env.INBOX.get(env.INBOX.idFromName('owner'));
       if (path === '/telegram') {
         const command = commandOf(body, env);
@@ -45,14 +51,14 @@ export default {
 };
 export class TelegramInbox {
   constructor(ctx, env) { this.ctx = ctx; this.env = env; }
-  async dispatch(workflow = 'telegram-commands.yml') {
-    if (!['telegram-commands.yml', 'scan.yml'].includes(workflow)) throw Error('workflow refused');
+  async dispatch(workflow = 'telegram-commands.yml', inputs) {
+    if (!['telegram-commands.yml', 'scan.yml', 'configure-cloudflare.yml'].includes(workflow)) throw Error('workflow refused');
     const repo = this.env.GITHUB_REPOSITORY;
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo || '')) throw Error('configuration');
     const response = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${workflow}/dispatches`, {
       method: 'POST', signal: AbortSignal.timeout(6000),
       headers: {'Authorization': `Bearer ${this.env.GITHUB_DISPATCH_TOKEN}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json', 'User-Agent': 'UniqloAlertWebhook'},
-      body: JSON.stringify({ref: this.env.GITHUB_BRANCH || 'main'})
+      body: JSON.stringify({ref: this.env.GITHUB_BRANCH || 'main', ...(inputs ? {inputs} : {})})
     }).catch(() => { throw Error('dispatch unavailable'); });
     if (response.status !== 204) throw Error('dispatch refused');
   }
@@ -69,12 +75,14 @@ export class TelegramInbox {
     return this.ctx.blockConcurrencyWhile(async () => {
       const path = new URL(request.url).pathname;
       const body = await request.json();
+      if (path === '/status') return json({lastHourlyDispatch:await this.ctx.storage.get('lastHourlyDispatch') ?? null,queue_length:(await this.ctx.storage.get('queue') || []).length});
       if (path === '/hourly') {
         if (!Number.isSafeInteger(body.hour) || body.hour < 0) return json({ok: false}, 400);
         const lastHour = await this.ctx.storage.get('lastHourlyDispatch') ?? -1;
         if (body.hour <= lastHour) return json({ok: true});
         await this.dispatch('scan.yml');
         await this.ctx.storage.put('lastHourlyDispatch', body.hour);
+        if (this.env.HOURLY_VERIFY_ENABLED === 'true') await this.dispatch('configure-cloudflare.yml',{verify_only:true,hour:String(body.hour)});
         return json({ok: true});
       }
       let queue = await this.ctx.storage.get('queue') || [];
