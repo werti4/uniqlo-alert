@@ -10,5 +10,11 @@
     "description": "Scanner mes favoris publiés et afficher les promotions",
     "handler": "scan",
     "receipt": "📥 Demande /scan reçue. En attente de prise en charge par GitHub ; le bot confirmera « Scan en cours » au démarrage."
+  },
+  {
+    "name": "favoris",
+    "description": "Voir mes favoris publiés et leurs derniers prix connus",
+    "handler": "favoris",
+    "receipt": "📥 Commande /favoris reçue. Récupération de vos favoris et des derniers prix connus."
   }
 ]

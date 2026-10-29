@@ -6,7 +6,7 @@ L’accusé de réception devient rapide après déploiement ; le démarrage et 
 
 ## Commandes actuelles et futures
 
-Lire le [contrat des commandes](../docs/TELEGRAM_COMMANDS.md). Toute commande doit être ajoutée au catalogue `commands.json` et passer par ce Worker, y compris les futures. Cloudflare gère l’entrée, l’autorisation, l’accusé et le routage ; GitHub est un exécutant automatique pour les tâches déléguées. Ne pas ajouter une commande seulement dans Python. Après modification, redéployer le Worker et vérifier la réponse réelle ; le code dans GitHub ne déploie rien à lui seul.
+Lire le [contrat des commandes](../docs/TELEGRAM_COMMANDS.md). Catalogue actuel : `/logs`, `/scan`, `/favoris` (liste en lecture seule avec derniers prix et promotions). Toute commande doit être ajoutée au catalogue `commands.json` et passer par ce Worker, y compris les futures. Cloudflare gère l’entrée, l’autorisation, l’accusé et le routage ; GitHub est un exécutant automatique pour les tâches déléguées. Ne pas ajouter une commande seulement dans Python. Après modification, redéployer le Worker et vérifier la réponse réelle ; le code dans GitHub ne déploie rien à lui seul.
 
 ## Déploiement
 

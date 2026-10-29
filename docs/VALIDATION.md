@@ -81,3 +81,7 @@ Préparation webhook publiée (`5c74690`, ajustement de confidentialité `e3d18c
 51 tests Python et 27 tests Node réussis localement. Nouveau contrôle : chaque nom du catalogue partagé est reconnu par Cloudflare et possède un traitement compatible ; un traitement absent est rejeté. La cible et la procédure des futures commandes sont formalisées dans TELEGRAM_COMMANDS.md et AGENTS.md. Services simulés : aucun déploiement ni commande réelle validés.
 
 Contrat et catalogue des commandes publiés au commit `128fff1`. [Job CI 40853282759](https://github.com/werti4/uniqlo-alert/actions/runs/40853282759) : toutes les étapes, y compris tests et contrôle navigateur, terminées avec succès. Catalogue inclus dans le Worker lors du dry-run Wrangler. Cloudflare reste non déployé : aucun service actif ni réponse réelle supplémentaire annoncés.
+
+## `/favoris`
+
+57 tests Python, 27 tests Node réussis localement. Six nouveaux tests : promotions/prix/date, prix absents et erreurs anciennes sans fuite du texte brut, pagination 50 favoris, différence liste vide/échec de lecture, liste conservée quand les relevés sont inaccessibles, autorisation privée sans scan. Le catalogue partagé inclut la commande et le test Cloudflare couvre automatiquement ce nom et son suffixe de bot. Aucun déploiement Cloudflare ni réponse réelle /favoris vérifiés.

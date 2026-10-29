@@ -10,6 +10,7 @@ Le catalogue exécutable est [telegram-webhook/commands.json](../telegram-webhoo
 | --- | --- | --- |
 | `/logs` | Cloudflare, conversation privée/propriétaire et header secret Telegram | Diagnostic préparé par l’exécutant GitHub et envoyé dans la conversation privée |
 | `/scan` | Cloudflare, même contrôle d’accès | Cloudflare demande le traitement ; GitHub effectue le scan long, annonce son début/sa fin et fournit les promotions ou un résultat incomplet explicite |
+| `/favoris` | Cloudflare, même contrôle d’accès et accusé spécifique | Tous les favoris publiés, actifs et pausés, derniers prix connus, pastille 🔴 si promotion au dernier relevé, prix de base/date/erreurs et pagination ; aucun scan |
 
 Les suffixes `/commande@NomDuBot` sont vérifiés. Les commandes absentes du catalogue et les messages non autorisés sont refusés. Les noms d’articles ne sont pas copiés dans le diagnostic /logs ; ils sont autorisés dans le bilan privé /scan explicitement demandé.
 
@@ -35,4 +36,4 @@ Le polling getUpdates conservé dans Python est uniquement un mode de transition
 
 ## État actuel et passage de relais
 
-Catalogue : /logs et /scan. Tests locaux : 51 Python et 27 Node réussis avec services simulés. Assemblage Worker à vérifier avec Wrangler --dry-run après modification de ses imports. Déploiement, secrets Cloudflare, webhook et test réel restent à effectuer. Pour reprendre dans une autre conversation, lire AGENTS.md, PROJECT_CONTEXT.md, ce contrat et telegram-webhook/README.md. Ne pas repartir d’un ancien ZIP ou recréer les identifiants déjà fonctionnels.
+Catalogue : /logs, /scan et /favoris. Tests locaux : 57 Python et 27 Node réussis avec services simulés. Assemblage Worker à vérifier avec Wrangler --dry-run après modification de ses imports. Déploiement, secrets Cloudflare, webhook et test réel restent à effectuer. Pour reprendre dans une autre conversation, lire AGENTS.md, PROJECT_CONTEXT.md, ce contrat et telegram-webhook/README.md. Ne pas repartir d’un ancien ZIP ou recréer les identifiants déjà fonctionnels.

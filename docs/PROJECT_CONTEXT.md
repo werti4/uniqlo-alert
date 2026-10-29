@@ -152,3 +152,11 @@ Préparation horaire publiée (`ff9214e`), [CI 40846436147 réussie](https://git
 Consolidation du contrat Telegram : catalogue partagé /logs et /scan, reconnaissance et accusés dérivés du catalogue côté Cloudflare, autorisation/bornes maintenues côté exécutant. Tests de couverture de chaque commande et rejet d’un traitement non implémenté ajoutés : 51 tests Python, 27 tests Node réussis localement. Aucun changement du calendrier ou scan forcé ; aucun déploiement.
 
 Contrat et catalogue des commandes publiés au commit `128fff1`. [Job CI 40853282759](https://github.com/werti4/uniqlo-alert/actions/runs/40853282759) : toutes les étapes, y compris tests et contrôle navigateur, terminées avec succès. Catalogue inclus dans le Worker lors du dry-run Wrangler. Cloudflare reste non déployé : aucun service actif ni réponse réelle supplémentaire annoncés.
+
+## Commande `/favoris` — ajout au catalogue Cloudflare
+
+Demande utilisateur : tous les favoris avec prix et pastille rouge pour les promotions. Commande /favoris ajoutée au catalogue unique Cloudflare (reconnaissance et accusé dérivés automatiquement), traitement privé délégué à tools/telegram_favorites.py via le runner de commandes. Liste les favoris publiés actifs ET pausés, prix actuel/base connus, 🔴 promotion au dernier relevé, ⚪ absence de promotion confirmée, ⚫ prix absent, date Paris, ancienneté et dernière erreur. Pagination sous 3500 caractères par message. Ne lit pas le stockage Chrome, ne publie/réécrit pas de favoris, ne lance pas de scan. Échec de lecture de la liste distinct d’une liste vide ; si l’état est inaccessible, les noms restent disponibles sans prix inventés.
+
+L’utilisateur a demandé si un scan avant chaque /favoris serait coûteux. Recommandation communiquée : garder /favoris en lecture seule ; demander /scan puis /favoris lorsqu’une actualisation est souhaitée. Le travail de scan est principalement côté GitHub/UNIQLO et soumis aux pauses ; pas de scan implicite ajouté à /favoris.
+
+Validation locale : 57 tests Python, 27 tests Node réussis, dont six nouveaux tests sur promotions, prix manquants/anciens/erreurs, liste vide/illisible, 50 favoris paginés, accès propriétaire et absence de scan. Cloudflare toujours non déployé selon le dernier état confirmé. Aucun scan ni message réel forcés. Inventaire courant : /logs, /scan, /favoris.

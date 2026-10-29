@@ -161,3 +161,9 @@ Voir [le guide de déploiement Cloudflare](../telegram-webhook/README.md). Le co
 ## Règle pour les commandes à venir
 
 Toutes les commandes Telegram doivent être intégrées à Cloudflare et au [catalogue partagé](../telegram-webhook/commands.json), selon [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md). Une nouvelle commande implique tests, documentation et redéploiement du Worker ; ne pas ajouter uniquement un script Python ou un bouton de lancement Actions. Le service Cloudflare n’est pas encore configuré/déployé selon la dernière confirmation utilisateur.
+
+## Commande `/favoris`
+
+Afficher tous les favoris **publiés** sur GitHub, y compris ceux en pause, avec les derniers prix connus : 🔴 promotion au dernier relevé (prix inférieur au prix de base), ⚪ pas de promotion confirmée, ⚫ prix indisponible. La date du relevé et un avertissement pour les prix anciens/en erreur évitent de présenter un ancien prix comme actuel. La liste est découpée en plusieurs messages si nécessaire. Les favoris locaux non publiés ne sont pas accessibles au bot.
+
+La commande ne lance aucun scan. Pour demander une nouvelle vérification, utiliser /scan, attendre sa fin puis /favoris. Cela évite de multiplier les lectures UNIQLO à chaque consultation. Le surcoût d’un scan est surtout dans le runner GitHub et les requêtes UNIQLO, pas dans le récepteur Cloudflare. L’ajout au catalogue est publié ; il faudra déployer/redéployer le Worker et valider une réponse réelle avant d’annoncer la commande active.

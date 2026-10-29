@@ -92,7 +92,7 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(COMMANDS,load_catalogue())
         for name,definition in COMMANDS.items():
             send,scan=Mock(),Mock()
-            count=process([update(1,'/'+name)],'123','bot',None,lambda:'safe',send,Mock(),scan=scan)
+            count=process([update(1,'/'+name)],'123','bot',None,lambda:'safe',send,Mock(),scan=scan,favorites=lambda:['safe list'])
             self.assertEqual(count,1)
             self.assertEqual(scan.called,definition['handler']=='scan')
             self.assertTrue(send.called)

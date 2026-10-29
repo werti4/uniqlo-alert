@@ -17,7 +17,7 @@ MAX_REPLIES = 3
 def load_catalogue():
     from pathlib import Path
     definitions = json.loads((Path(__file__).resolve().parents[1] / 'telegram-webhook/commands.json').read_text())
-    supported = {'logs', 'scan'}
+    supported = {'logs', 'scan', 'favoris'}
     catalogue = {}
     for item in definitions:
         name = item.get('name', '')
@@ -133,7 +133,7 @@ class CommandStore:
         self.sha = record['content']['sha']
 
 
-def process(updates, chat_id, username, cursor, report, send, save, scan=None):
+def process(updates, chat_id, username, cursor, report, send, save, scan=None, favorites=None):
     replies = 0
     persisted = cursor
     scanned = False
@@ -154,7 +154,8 @@ def process(updates, chat_id, username, cursor, report, send, save, scan=None):
         handler = definition['handler'] if definition else None
         is_logs = handler == 'logs'
         is_scan = handler == 'scan' and scan is not None
-        if authorized and (is_logs or is_scan):
+        is_favorites = handler == 'favoris' and favorites is not None
+        if authorized and (is_logs or is_scan or is_favorites):
             if replies >= MAX_REPLIES:
                 break
             if is_scan:
@@ -168,7 +169,11 @@ def process(updates, chat_id, username, cursor, report, send, save, scan=None):
                     scanned = True
                     scan()
             else:
-                send(report())
+                if is_favorites:
+                    for text in favorites():
+                        send(text)
+                else:
+                    send(report())
                 save(uid)
                 persisted = uid
             replies += 1
@@ -254,7 +259,10 @@ def run():
         from tools.telegram_scan import execute
         cache.clear()
         execute(send)
-    count = process(updates, chat_id, bot['username'], cursor, report, send, store.save, scan=scan)
+    def favorites():
+        from tools.telegram_favorites import messages
+        return messages(github, key, os.getenv('DEFAULT_BRANCH', 'main'))
+    count = process(updates, chat_id, bot['username'], cursor, report, send, store.save, scan=scan, favorites=favorites)
     if webhook_url and updates:
         bridge(webhook_url, webhook_secret, 'ack', {'through': max(item['update_id'] for item in updates)})
     print(f'Commandes Telegram traitées : {count} commande(s). Scans uniquement sur demande /scan autorisée.')
