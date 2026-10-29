@@ -8,6 +8,16 @@ Ouvrir `chrome://extensions`, activer **Mode développeur**, puis **Charger l'ex
 
 Pour une installation depuis les sources, exécuter d'abord `python3 tools/generate_icons.py` à la racine du dépôt téléchargé, puis sélectionner le dossier `extension/`. L'artefact Actions contient déjà les icônes générées. Après une mise à jour des fichiers, cliquer sur **Actualiser** dans `chrome://extensions`.
 
+### La petite fenêtre UNIQLO (version 1.1.0)
+
+Après une mise à jour, cliquez sur **Actualiser** dans `chrome://extensions`, puis rechargez les pages UNIQLO déjà ouvertes. La fenêtre apparaît automatiquement en bas à droite sur `www.uniqlo.com`. Sur une fiche **UNIQLO France**, son bouton ajoute ou retire l’article ouvert en un clic. Sur les autres pages, elle conserve l’aperçu et l’accès au tableau de bord. Aucun prix n’est inventé avant un relevé du scanner.
+
+Les compteurs ouvrent les favoris, les articles en baisse ou les alertes. Le bouton « − » réduit la fenêtre ; le bouton « UNIQLO Alert » la rouvre. L’icône Chrome ouvre également une petite fenêtre, depuis n’importe quel site. Les réglages et le tableau de bord complet restent accessibles.
+
+Les modifications restent locales jusqu’à leur publication dans le tableau de bord. Telegram peut être configuré plus tard ; il ne bloque ni l’installation ni la gestion des favoris.
+
+La nouvelle version demande l’accès aux pages `www.uniqlo.com` pour afficher la fenêtre automatiquement. Chrome peut demander de confirmer cet accès après la mise à jour. Aucun accès automatique aux autres sites n’est ajouté.
+
 ## 2. Créer l'accès GitHub de l'extension
 
 Créer un **fine-grained personal access token** depuis les paramètres GitHub, dans **Developer settings → Personal access tokens → Fine-grained tokens**.

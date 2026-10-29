@@ -157,8 +157,14 @@ async function start() {
     call = module.demoCall;
     const banner = document.createElement('div'); banner.className = 'demo-banner'; banner.textContent = 'APERÇU DE DÉMONSTRATION · Prix et articles illustratifs · Aucun scan réel'; document.body.prepend(banner);
   } else db = await call('read');
+  if (new URL(location.href).searchParams.get('filter') === 'drop') {
+    filter = 'drop';
+    document.querySelectorAll('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === filter));
+  }
   bind(); render();
-  if (!db.settings.token) view('settings');
+  const requestedView = new URL(location.href).searchParams.get('view');
+  if (['favorites', 'alerts', 'settings'].includes(requestedView)) view(requestedView);
+  if (!db.settings.token && !requestedView) view('settings');
   if (db.settings.token && !demo) await perform(() => call('sync'), null);
   const source = new URL(location.href).searchParams.get('source');
   if (source && !demo) {

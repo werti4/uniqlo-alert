@@ -84,3 +84,19 @@ Les vérifications locales de cette version sont terminées : 27 tests Python et
 ## Ce qui est hors périmètre
 
 Scan massif du catalogue, achat automatique, contournement de CAPTCHA, proxies de rotation, récupération des sessions UNIQLO ou serveur payant. Le projet NAS/Maison et les autres projets personnels ne font pas partie de ce chantier.
+
+## Priorité actuelle — installation Chrome
+
+Le 29 octobre 2026, l’utilisateur demande de finaliser et installer l’extension Chrome, qui n’est pas encore installée sur son ordinateur. La configuration Telegram est explicitement reportée. Ne pas la demander comme préalable à l’installation ou à la gestion locale des favoris.
+
+L’environnement cloud a validé 27 tests Python et 17 tests JavaScript. Les icônes ont été générées et le ZIP local a été contrôlé : 10 fichiers autorisés, aucune donnée privée. Aucun relevé réel ni envoi Telegram n’a été effectué. Le chargement de l’extension dans le Chromium de test cloud n’a pas abouti ; la validation visuelle et fonctionnelle dans le Chrome de l’utilisateur reste à effectuer. Le paquet peut être obtenu depuis une exécution réussie de « Vérifier le projet » dans GitHub Actions.
+
+Étapes manuelles restantes : télécharger et décompresser le paquet, ouvrir chrome://extensions, activer le mode développeur, charger le dossier contenant manifest.json et vérifier l’ouverture du tableau de bord. La connexion GitHub et le secret UA_ENCRYPTION_KEY sont nécessaires aux scans cloud, mais pas à l’installation ni à l’ajout local d’un favori.
+
+## Fenêtre compacte — version 1.1.0
+
+Demande utilisateur : afficher automatiquement une petite fenêtre dès l’ouverture d’une page UNIQLO ; ajouter ou retirer en un clic l’article de la fiche ouverte ; voir les fonctions principales sans ouvrir le grand tableau de bord. Implémentation : script de contenu sur www.uniqlo.com, interface isolée par Shadow DOM, bouton de réduction/réouverture, popup Chrome et accès aux favoris/baisses/alertes/réglages. Seules les fiches France sont prises en charge pour l’ajout. Les changements restent locaux jusqu’à publication explicite. Aucun scan local ou envoi Telegram ajouté. La demande antérieure sur la fréquence Actions reste distincte, sans modification du calendrier dans cette étape.
+
+Le site ne reçoit qu’un résumé restreint : aucune clé ni jeton. Les commandes privilégiées sont refusées depuis les scripts de contenu. L’artefact Actions inclut les deux nouveaux fichiers et fournit directement les fichiers d’extension, sans ZIP imbriqué.
+
+Validation du 29 octobre 2026 : 27 tests Python et 19 tests JavaScript réussis. Dans Chromium, test d’interface sur pages synthétiques avec API Chrome simulées et vrai gestionnaire background : apparition, ajout/retrait, compteurs, réduction/réouverture, navigation SPA et catalogue réussis sans erreur JavaScript. Captures desktop et écran étroit inspectées. Le chargement réel d’une extension décompressée dans ce cloud est interdit par la politique administrateur (diagnostic CDP explicite) ; aucune modification de cette politique. La validation de l’installation réelle reste à faire dans le Chrome de l’utilisateur. Cette version est préparée localement ; aucune publication GitHub n’est démontrée pour ces changements.

@@ -34,3 +34,10 @@ Le premier workflow scanner a exécuté sa vérification de configuration et ign
 La fiabilité d'un scan UNIQLO depuis un runner GitHub, l'installation effective de l'extension et la réception Telegram sur l'iPhone ne sont pas démontrées par ces tests. Elles demandent la configuration personnelle et une vérification réelle.
 
 La vérification visuelle dans Chrome n'a pas été réalisée : les navigateurs de test n'ont pas pu atteindre le serveur d'aperçu local. La validation de syntaxe et des liaisons d'interface ne remplace pas ce contrôle.
+
+## Fenêtre compacte 1.1.0 — validation locale
+
+- 27 tests Python et 19 tests JavaScript réussis ; nouvelles régressions pour le résumé sans identifiants, le refus des commandes privilégiées depuis le site, la bascule sur la bonne fiche et les bascules concurrentes.
+- Test Chromium sur pages synthétiques, avec API Chrome simulées et vrai gestionnaire background : apparition, ajout/retrait, réduction/réouverture, navigation SPA, catalogue et mode popup. Aucune requête UNIQLO ni Telegram. Captures desktop et écran étroit inspectées.
+- Chargement réel d’extension bloqué dans le cloud par la politique administrateur ; installation réelle à vérifier dans Chrome après mise à jour et rechargement des pages UNIQLO.
+- ZIP local 1.1.0 : 12 fichiers autorisés, archive intègre sans chiffrement ni ZIP imbriqué. Le workflow prépare désormais un artefact avec ces fichiers directement. Aucune exécution distante de cette nouvelle version n’est confirmée.

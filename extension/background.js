@@ -26,12 +26,6 @@ function bootstrap() {
   return booting;
 }
 chrome.runtime.onInstalled.addListener(bootstrap);
-chrome.action.onClicked.addListener(async tab => {
-  await bootstrap();
-  const page = new URL(chrome.runtime.getURL('app.html'));
-  if (tab?.id && tab.url?.startsWith('https://www.uniqlo.com/fr/fr/products/')) page.searchParams.set('source', tab.id);
-  await chrome.tabs.create({url: page.href});
-});
 
 function repoPath(settings) {
   if (!/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(settings.repo)) throw new Error('Indique le dépôt sous la forme compte/depot.');
@@ -115,10 +109,49 @@ async function add(favorite) {
   await chrome.storage.local.set({favorites: db.favorites, dirty: true});
   return read();
 }
-async function handle(message) {
+// The site only receives a compact summary, never credentials or the full database.
+function quickSummary(db, rawUrl) {
+  let product = null;
+  try { product = canonical(rawUrl); } catch {}
+  const favorite = product && db.favorites.find(f => f.id === product.id);
+  const current = product && db.cloud.products?.[product.id];
+  const products = db.favorites.map(f => ({...f, ...db.cloud.products?.[f.id]}));
+  return {
+    product: product ? {...product, saved: !!favorite, name: favorite?.name || current?.name || '', priceCents: current?.priceCents ?? null, lastSuccessfulAt: current?.lastSuccessfulAt || current?.lastCheckedAt || null} : null,
+    count: db.favorites.length,
+    drops: products.filter(p => p.firstPriceCents > p.priceCents && Number.isSafeInteger(p.priceCents)).length,
+    alerts: db.cloud.alerts?.length || 0,
+    dirty: !!db.dirty,
+    connected: !!db.settings.token && !!db.syncedAt,
+    preview: products.slice(0, 3).map(p => ({name: p.name, priceCents: p.priceCents ?? null})),
+  };
+}
+async function handle(message, sender) {
+  const trusted = sender.url?.startsWith(chrome.runtime.getURL(''));
+  if (!trusted) {
+    const url = new URL(sender.url || 'about:blank');
+    if (url.origin !== 'https://www.uniqlo.com' || !['quickRead', 'quickToggle', 'openDashboard'].includes(message.type)) throw new Error('Commande non autorisée depuis cette page.');
+  }
+  const quickUrl = trusted ? message.url : sender.url;
+
   await bootstrap();
   const db = await read();
   switch (message.type) {
+    case 'quickRead': return quickSummary(db, quickUrl);
+    case 'quickToggle': {
+      const product = canonical(quickUrl);
+      if (db.favorites.some(f => f.id === product.id)) {
+        await chrome.storage.local.set({favorites: db.favorites.filter(f => f.id !== product.id), dirty: true});
+      } else {
+        await add({url: product.url, name: message.name || 'Article UNIQLO'});
+      }
+      return quickSummary(await read(), quickUrl);
+    }
+    case 'openDashboard': {
+      const view = ['favorites', 'alerts', 'settings'].includes(message.view) ? message.view : 'favorites';
+      await chrome.tabs.create({url: chrome.runtime.getURL('app.html') + '?view=' + view + (message.filter === 'drop' ? '&filter=drop' : '')});
+      return {opened: true};
+    }
     case 'read': return db;
     case 'addUrl': return add(message.favorite);
     case 'addActive': return addActive(message.tabId);
@@ -159,7 +192,7 @@ async function handle(message) {
 let queue = Promise.resolve();
 chrome.runtime.onMessage.addListener((message, sender, reply) => {
   if (sender.id !== chrome.runtime.id) return false;
-  const task = queue.then(() => handle(message));
+  const task = queue.then(() => handle(message, sender));
   queue = task.catch(() => {});
   task.then(value => reply({ok: true, value}), error => reply({ok: false, error: error.message || 'Opération impossible.'}));
   return true;

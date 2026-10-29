@@ -40,6 +40,7 @@ jobs:
           root = Path('extension')
           allowed = [
               'manifest.json', 'app.html', 'app.css', 'app.js', 'core.js', 'background.js',
+              'quick.html', 'quick.js',
               'icons/icon16.png', 'icons/icon32.png', 'icons/icon48.png', 'icons/icon128.png',
           ]
           with ZipFile('uniqlo-alert-extension.zip', 'w', ZIP_DEFLATED) as archive:
@@ -53,6 +54,19 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: uniqlo-alert-extension
-          path: uniqlo-alert-extension.zip
+          # A single archive from GitHub: no nested ZIP to extract twice.
+          path: |
+            extension/manifest.json
+            extension/app.html
+            extension/app.css
+            extension/app.js
+            extension/core.js
+            extension/background.js
+            extension/quick.html
+            extension/quick.js
+            extension/icons/icon16.png
+            extension/icons/icon32.png
+            extension/icons/icon48.png
+            extension/icons/icon128.png
           if-no-files-found: error
           retention-days: 7

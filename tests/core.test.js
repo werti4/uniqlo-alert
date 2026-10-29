@@ -67,12 +67,13 @@ test('background serializes changes and preserves local data on remote conflict 
   const key = newKey();
   const store = {settings:{repo:'werti4/uniqlo-alert',branch:'main',token:'test-token',key}};
   let listener, remoteConfig = null, remoteCloud = null, deniedRepo = false;
+  const openedTabs = [];
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64');
   const response = (value,status=200) => new Response(JSON.stringify(value),{status});
   globalThis.chrome = {
     storage:{local:{setAccessLevel:async()=>{},get:async keys=>structuredClone(Object.fromEntries(keys.filter(k=>k in store).map(k=>[k,store[k]]))),set:async changes=>Object.assign(store,structuredClone(changes))}},
     runtime:{id:'mock-extension',getURL:path=>'chrome-extension://mock-extension/'+path,onInstalled:{addListener(){}},onMessage:{addListener(fn){listener=fn;}}},
-    action:{onClicked:{addListener(){}}},tabs:{create:async()=>{}}
+    action:{onClicked:{addListener(){}}},tabs:{create:async options=>openedTabs.push(options)}
   };
   globalThis.fetch = async(raw,init={})=>{
     const path = new URL(raw).pathname.replace('/repos/werti4/uniqlo-alert','');
@@ -93,7 +94,7 @@ test('background serializes changes and preserves local data on remote conflict 
   };
   try {
     await import('../extension/background.js?regression');
-    const call=message=>new Promise(resolve=>listener(message,{id:'mock-extension'},resolve));
+    const call=message=>new Promise(resolve=>listener(message,{id:'mock-extension',url:'chrome-extension://mock-extension/app.html'},resolve));
     await t.test('parallel favorite additions are retained',async()=>{
       const replies=await Promise.all([favorite.url,'https://www.uniqlo.com/fr/fr/products/E469847-000/00'].map(url=>call({type:'addUrl',favorite:{url,name:'Article'}})));
       assert.ok(replies.every(r=>r.ok)); assert.equal(store.favorites.length,2);
@@ -129,6 +130,39 @@ test('background serializes changes and preserves local data on remote conflict 
       remoteCloud={content:encode(await seal({...cloud(),products:{[favorite.id]:{priceCents:0}}},key))};
       assert.equal((await call({type:'reloadRemote'})).ok,false); assert.deepEqual(store,local);
       remoteCloud=saved;
+    });
+    await t.test('site summary excludes credentials and site messages cannot read privileged state',async()=>{
+      const siteCall=message=>new Promise(resolve=>listener(message,{id:'mock-extension',url:favorite.url,tab:{id:1}},resolve));
+      const summary=await siteCall({type:'quickRead',url:'https://evil.test/'});
+      assert.equal(summary.ok,true);
+      assert.equal(summary.value.product.id,favorite.id);
+      assert.equal(summary.value.product.saved,true);
+      assert.equal(summary.value.count,2);
+      assert.equal(JSON.stringify(summary).includes('test-token'),false);
+      assert.equal(JSON.stringify(summary).includes(key),false);
+      assert.equal('settings' in summary.value,false);
+      assert.equal((await siteCall({type:'openDashboard',view:'favorites',filter:'drop'})).ok,true);
+      assert.equal(openedTabs.at(-1).url,'chrome-extension://mock-extension/app.html?view=favorites&filter=drop');
+      for (const type of ['read','settings','publish','remove','sync']) {
+        assert.equal((await siteCall({type,id:favorite.id})).ok,false);
+      }
+      const denied=await new Promise(resolve=>listener({type:'quickRead'},{id:'mock-extension',url:'https://evil.test/'},resolve));
+      assert.equal(denied.ok,false);
+    });
+    await t.test('one-click toggle follows the sender product and preserves other favorites',async()=>{
+      const siteCall=message=>new Promise(resolve=>listener(message,{id:'mock-extension',url:favorite.url,tab:{id:1}},resolve));
+      const removed=await siteCall({type:'quickToggle',url:'https://www.uniqlo.com/fr/fr/products/E469847-000/00'});
+      assert.equal(removed.ok,true); assert.equal(removed.value.product.saved,false);
+      assert.equal(store.favorites.length,1); assert.equal(store.dirty,true);
+      const added=await siteCall({type:'quickToggle',name:'Pull bleu'});
+      assert.equal(added.ok,true); assert.equal(added.value.product.saved,true);
+      assert.equal(store.favorites.find(f=>f.id===favorite.id).name,'Pull bleu');
+      assert.equal(store.favorites.length,2);
+      const catalog=await new Promise(resolve=>listener({type:'quickToggle'},{id:'mock-extension',url:'https://www.uniqlo.com/fr/fr/'},resolve));
+      assert.equal(catalog.ok,false);
+      const [a,b]=await Promise.all([siteCall({type:'quickToggle'}),siteCall({type:'quickToggle'})]);
+      assert.equal(a.value.product.saved,false); assert.equal(b.value.product.saved,true);
+      assert.equal(store.favorites.length,2);
     });
     await t.test('empty encryption keys and inaccessible repos never report success',async()=>{
       assert.equal((await call({type:'settings',settings:{key:''}})).ok,false); assert.equal(store.settings.key,key);
