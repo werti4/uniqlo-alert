@@ -1,5 +1,26 @@
 # Validation actuelle et preuves
 
+## État courant — activation iPhone bloquée par le format du secret GitHub
+
+Le 29 octobre 2026, reprise avec connecteur Cloudflare disponible (le blocage d’accès d’une autre conversation ne s’applique pas ici). Worker existant mis à jour sans recréer de ressources ni secrets. Version de code de configuration `8ee90bcf-d183-4ae2-ac30-2d8c577d4686`, migration v1/INBOX et les six noms de secrets conservés (cinq requis + extra inutilisé).
+
+Preuve réelle : workflow dédié [Configurer Cloudflare 40867953571](https://github.com/werti4/uniqlo-alert/actions/runs/40867953571), commit `49265e7`, échec contrôlé **avant tout appel au Worker/Telegram** : `UA_TELEGRAM_WEBHOOK_SECRET` dans Actions est présent mais ne respecte pas le format 32–256 caractères parmi A–Z/a–z/0–9/_/-. Aucun caractère, longueur ou contenu du secret n’a été affiché. Il faut corriger cette saisie, pas relancer aveuglément ni assouplir la validation.
+
+Cette exécution prouve aussi : variable Actions UA_TELEGRAM_WEBHOOK_URL égale à l’URL racine attendue, UA_TELEGRAM_ENABLED=true, secrets Actions TELEGRAM_BOT_TOKEN et TELEGRAM_CHAT_ID non vides (validité et égalité avec Cloudflare NON vérifiées). PAT Worker, identité Telegram, secret partagé, webhook et file authentifiée restent non validés. Aucun setWebhook exécuté par cet essai, aucun scan ni message de test. Aucun prochain scan horaire naturel à vérifier tant que l’horaire reste désactivé.
+
+Après l’essai : **SETUP_ENABLED=false**, **HOURLY_SCAN_ENABLED=false**, **HOURLY_VERIFY_ENABLED=false** confirmés par API. Cron 17 * * * * et anciens calendriers GitHub conservés. Tous les secrets ont été conservés par bindings inherit, puis leur présence a été relue par API. Aucun abonnement modifié. L’endpoint /configure nécessite maintenant une réouverture temporaire explicite et une échéance future pour reprendre ; /configuration-status reste en lecture seule et exige le secret commun. Le déclencheur push initial du workflow de configuration est retiré après cet essai ; workflow_dispatch reste disponible, vérification seule par défaut.
+
+### Intervention utilisateur sur iPhone, sans terminal
+
+1. Dans le gestionnaire de mots de passe, utiliser/générer un code **aléatoire de 64 lettres et chiffres**, sans espace, ponctuation, guillemets ou préfixe. Ce code n’est PAS le jeton BotFather. Ne pas l’envoyer en chat.
+2. GitHub → dépôt werti4/uniqlo-alert → Settings → Secrets and variables → Actions → Secrets → crayon sur UA_TELEGRAM_WEBHOOK_SECRET → remplacer par ce code → Update secret.
+3. Cloudflare → Worker uniqlo-telegram-webhook → Settings → Runtime variables and secrets → WEBHOOK_SECRET → Rotate → saisir exactement le même code → Deploy. Ne pas modifier UA_ENCRYPTION_KEY ni les jetons Telegram pour cette correction. Le secret UA_TELEGRAM_WEBHOOK_SECRET supplémentaire côté Cloudflare n’est pas utilisé par le Worker.
+4. Revenir dans cette conversation et signaler uniquement que c’est corrigé. L’agent réouvrira temporairement SETUP_ENABLED avec une nouvelle échéance, puis relancera le seul workflow de configuration (jamais Scanner UNIQLO ou Commandes Telegram pour tester). Aucun secret à recopier dans la conversation, aucun terminal requis.
+
+Après succès du contrôle : refermer SETUP_ENABLED, activer HOURLY_SCAN_ENABLED avec le connecteur et dans wrangler.jsonc, activer temporairement HOURLY_VERIFY_ENABLED pour le diagnostic automatique du prochain horaire naturel. Programmer alors une vérification future via Automations si l’heure n’est pas atteinte ; cette vérification ne doit pas forcer un scan. Ne retirer les anciens on.schedule qu’après preuve Scheduled/dispatch naturel + run scanner correspondant ; conserver workflow_dispatch et déclenchements de favoris. Actualiser le contexte à chaque résultat réel.
+
+Code publié `49265e7` : [CI 40867953541](https://github.com/werti4/uniqlo-alert/actions/runs/40867953541) entièrement réussie. Tests : **67 Python, 33 Node**, services simulés, Wrangler 4.155.0 dry-run réussi. Le workflow d’activation échoué ne contredit pas la CI : son échec identifie une configuration personnelle invalide, pas un test applicatif échoué.
+
 État consolidé le 29 octobre 2026 (Europe/Paris). Les anciennes validations et leurs limites initiales sont conservées dans [HISTORY.md](HISTORY.md). Ce document ne constitue pas une nouvelle exécution des tests.
 
 ## Contrôle après saisie des secrets — relais Codex du 29 octobre 2026

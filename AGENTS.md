@@ -4,6 +4,8 @@ Pour la reprise de configuration Cloudflare, lire aussi `docs/CODEX_HANDOFF.md`.
 `docs/HISTORY.md` est une archive : ne pas appliquer ses anciens blocages comme état courant.
 **Toute commande Telegram actuelle ou future doit être enregistrée dans `telegram-webhook/commands.json` et intégrée au point d’entrée Cloudflare. Lire `docs/TELEGRAM_COMMANDS.md` avant tout ajout ; une commande uniquement implémentée en Python/Actions est incomplète. GitHub peut exécuter un travail long, mais ne doit pas nécessiter de lancement manuel utilisateur. Worker Cloudflare déployé le 29/10/2026 ; les cinq secrets Worker sont présents (noms/types vérifiés), mais leur validité, la liaison GitHub, le webhook et le dispatch horaire restent à confirmer selon le contexte courant.**
 
+Activation iPhone : lire la section « État courant » du relais. Le workflow dédié a trouvé un format invalide pour le secret Actions UA_TELEGRAM_WEBHOOK_SECRET ; configuration interrompue avant webhook, horaire toujours false. Ne pas relancer sans correction sécurisée et ne pas confondre CI réussie et activation réussie.
+
 Le code et les résultats vérifiés priment sur un ancien message de conversation.
 
 - Outil personnel gratuit : extension Chrome Manifest V3, UNIQLO France, EUR.

@@ -1,10 +1,5 @@
 name: Configurer Cloudflare sans scan
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tools/configure_cloudflare.py'
-      - '.github/workflows/configure-cloudflare.yml'
   workflow_dispatch:
     inputs:
       verify_only:
