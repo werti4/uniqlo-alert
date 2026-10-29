@@ -55,3 +55,5 @@ Vérification à la suite de la capture utilisateur : 7 exécutions dans l’his
 ## Commande `/logs`
 
 40 tests Python et 19 tests JavaScript réussis localement après ajout de huit tests du lecteur de commandes. API simulées : contrôle de l’expéditeur privé, suffixe de commande, non-retraitement, réessai après échec, limitation/batch, diagnostics sans données personnelles, stockage chiffré séparé et erreurs sans jeton. Aucun appel réel Telegram, aucun scan forcé. Le workflow de commandes est configuré pour des passages différés et dépend du scheduler GitHub dont les lancements restent non démontrés. La réponse réelle à /logs n’est pas encore constatée.
+
+Commande /logs publiée au commit `43eaf3c`. [CI 40806326643 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40806326643), suites Python/JS et contrôle navigateur inclus. Le workflow **Commandes Telegram** est déclaré actif ; aucune exécution de ce nouveau lecteur n’était visible lors de la vérification de publication. Aucun scan ni workflow manuel n’a été déclenché. La réponse réelle à /logs reste à constater lors d’un passage planifié.
