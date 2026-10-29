@@ -1,43 +1,16 @@
 # Contexte de référence — UNIQLO Alert
 
-## Dernier contrôle après capture GitHub — 29 octobre 2026, 13:08 Paris
+## État courant — webhook et premier scan horaire naturel validés
 
-La capture utilisateur confirme la bonne entrée Repository secret UA_TELEGRAM_WEBHOOK_SECRET, récemment modifiée. Relance du workflow dédié 40869512253, job 123437025540 : **trop court (moins de 32 caractères)**. Cette nouvelle catégorie remplace le précédent diagnostic de caractères interdits : la saisie a changé, mais ne satisfait pas encore le minimum. Aucun contenu ni longueur exacte du secret affiché. Contrôle interrompu avant HTTP Worker/Telegram, aucun setWebhook, scan ou message de test.
+Le **29 octobre 2026 à 13:15 Paris**, activation réussie avec les secrets corrigés : [workflow 40869512253](https://github.com/werti4/uniqlo-alert/actions/runs/40869512253), job 123439570029. Concordance des secrets/token/chat Actions et Worker, identité/username du bot, propriétaire privé, workflows actifs et PAT Actions write vérifiés. setWebhook/getWebhookInfo confirment /telegram, allowed_updates message, max_connections=1, sans suppression des updates. Deux commandes déjà en attente ont été livrées et les runs Commandes Telegram 40871565324 et 40871569061 ont réussi. Aucun message de test ni scan forcé par l’agent.
 
-Intervention restante : dans GitHub, crayon de UA_TELEGRAM_WEBHOOK_SECRET, coller le code aléatoire lui-même de 64 lettres/chiffres (pas le nom du secret), Update secret. Cloudflare WEBHOOK_SECRET doit contenir exactement le même code. Ne pas modifier la clé AES ni les jetons Telegram pour cette correction. Aucun secret dans le chat. Ne plus relancer avant une nouvelle correction.
+**Premier déclenchement naturel prouvé à 13:17 Paris (12:17 UTC)** : [scanner 40872057387](https://github.com/werti4/uniqlo-alert/actions/runs/40872057387), créé à 12:17:34 UTC, toutes les étapes dont « Scanner les favoris » exécutées avec succès. [Diagnostic horaire 40872060775](https://github.com/werti4/uniqlo-alert/actions/runs/40872060775), job 123441351584 : VERIFY_ONLY=true, VERIFY_HOUR=498132, lastHourlyDispatch=498132, hourly_enabled=true, webhook_confirmed=true, pending_updates=0, last_error_date=null, queue_length=0. L’heure correspond au scheduled naturel et au dispatch mémorisé par le DO ; ce n’est pas un scan lancé pour tester.
 
-SETUP_ENABLED refermé à false après l’essai ; HOURLY_SCAN_ENABLED=false et HOURLY_VERIFY_ENABLED=false restent inchangés. Calendriers GitHub conservés, aucune vérification horaire naturelle programmée tant que l’activation n’a pas réussi. Les diagnostics plus bas sont historiques ; ce paragraphe est l’état le plus récent. Aucun changement applicatif pendant ce contrôle, mise à jour documentaire uniquement.
+Après validation, **HOURLY_SCAN_ENABLED=true**, **HOURLY_VERIFY_ENABLED=false**, **SETUP_ENABLED=false** confirmés par API et maintenus dans wrangler.jsonc ; cron Cloudflare **17 * * * *** inchangé. Les anciens on.schedule de scan.yml et telegram-commands.yml sont retirés par cette publication pour éviter les doublons. workflow_dispatch, on.push des favoris, permissions et groupe uniqlo-monitor sont conservés. Publication avec **[skip actions]**, car modifier scan.yml déclencherait sinon un scan de push. Aucun workflow entier désactivé.
 
-## Dernier contrôle après « C’est corrigé » — 29 octobre 2026, 12:58 Paris
+La vérification Automations créée pour 13:25 Paris a été **désactivée**, car le déclenchement naturel a été vérifié ici avant cette échéance. Aucune autre vérification persistante n’est annoncée. Le workflow dédié configure-cloudflare.yml reste disponible en lecture seule par défaut, sans déclencheur push ; /configure est fermé, /configuration-status exige le secret commun. Six noms de secrets (cinq requis + extra inutilisé), DO SQLite/bindings, favoris, clé AES et extension préservés.
 
-La relance de 40867953571 a encore trouvé un format invalide. Pour écarter un ancien état de run, une exécution **neuve** [40869512253](https://github.com/werti4/uniqlo-alert/actions/runs/40869512253), code `197bbcb`, a été lancée avec un diagnostic limité à des catégories, sans afficher longueur, contenu ou caractère du secret. Résultat exact : **secret Actions UA_TELEGRAM_WEBHOOK_SECRET : caractères non autorisés**. Le contrôle est arrêté avant tout appel HTTP Worker/Telegram, setWebhook non exécuté. Ne plus relancer tant que cette saisie n’est pas corrigée dans GitHub ; ne pas assouplir le format pour contourner le problème.
-
-Intervention iPhone : GitHub Settings → Secrets and variables → Actions → Secrets → **UA_TELEGRAM_WEBHOOK_SECRET** → crayon → saisir un code aléatoire de 64 lettres/chiffres uniquement, sans guillemets, espace, ponctuation ou retour à la ligne → Update secret. Cloudflare **WEBHOOK_SECRET** doit contenir exactement la même valeur. Ce n’est pas TELEGRAM_BOT_TOKEN et ce n’est pas le secret supplémentaire UA_TELEGRAM_WEBHOOK_SECRET dans Cloudflare. Ne communiquer aucune valeur en chat. Si l’utilisateur a seulement changé Cloudflare, il reste impérativement la saisie GitHub.
-
-SETUP_ENABLED a été refermé à false après l’essai ; HOURLY_SCAN_ENABLED et HOURLY_VERIFY_ENABLED restent false, les six noms de secrets sont conservés. Aucun scan forcé, aucun message de test, aucun ancien calendrier retiré. Pas de contrôle horaire naturel planifié tant que l’activation n’a pas réussi. Après correction, rouvrir temporairement l’activation avec une échéance future et utiliser une exécution fraîche du seul workflow de configuration. Le déclencheur push temporaire de diagnostic est retiré après l’essai ; garder workflow_dispatch par défaut en lecture seule.
-
-Tests du diagnostic : 68 Python et 33 Node réussis, dont un test vérifiant les trois catégories de format sans divulgation. Aucun changement du Worker, du scanner, de l’extension, des favoris ni de la clé AES dans cette relance ; seuls la procédure Actions, son diagnostic et le contexte ont évolué.
-
-## État courant — activation iPhone bloquée par le format du secret GitHub
-
-Le 29 octobre 2026, reprise avec connecteur Cloudflare disponible (le blocage d’accès d’une autre conversation ne s’applique pas ici). Worker existant mis à jour sans recréer de ressources ni secrets. Version de code de configuration `8ee90bcf-d183-4ae2-ac30-2d8c577d4686`, migration v1/INBOX et les six noms de secrets conservés (cinq requis + extra inutilisé).
-
-Preuve réelle : workflow dédié [Configurer Cloudflare 40867953571](https://github.com/werti4/uniqlo-alert/actions/runs/40867953571), commit `49265e7`, échec contrôlé **avant tout appel au Worker/Telegram** : `UA_TELEGRAM_WEBHOOK_SECRET` dans Actions est présent mais ne respecte pas le format 32–256 caractères parmi A–Z/a–z/0–9/_/-. Aucun caractère, longueur ou contenu du secret n’a été affiché. Il faut corriger cette saisie, pas relancer aveuglément ni assouplir la validation.
-
-Cette exécution prouve aussi : variable Actions UA_TELEGRAM_WEBHOOK_URL égale à l’URL racine attendue, UA_TELEGRAM_ENABLED=true, secrets Actions TELEGRAM_BOT_TOKEN et TELEGRAM_CHAT_ID non vides (validité et égalité avec Cloudflare NON vérifiées). PAT Worker, identité Telegram, secret partagé, webhook et file authentifiée restent non validés. Aucun setWebhook exécuté par cet essai, aucun scan ni message de test. Aucun prochain scan horaire naturel à vérifier tant que l’horaire reste désactivé.
-
-Après l’essai : **SETUP_ENABLED=false**, **HOURLY_SCAN_ENABLED=false**, **HOURLY_VERIFY_ENABLED=false** confirmés par API. Cron 17 * * * * et anciens calendriers GitHub conservés. Tous les secrets ont été conservés par bindings inherit, puis leur présence a été relue par API. Aucun abonnement modifié. L’endpoint /configure nécessite maintenant une réouverture temporaire explicite et une échéance future pour reprendre ; /configuration-status reste en lecture seule et exige le secret commun. Le déclencheur push initial du workflow de configuration est retiré après cet essai ; workflow_dispatch reste disponible, vérification seule par défaut.
-
-### Intervention utilisateur sur iPhone, sans terminal
-
-1. Dans le gestionnaire de mots de passe, utiliser/générer un code **aléatoire de 64 lettres et chiffres**, sans espace, ponctuation, guillemets ou préfixe. Ce code n’est PAS le jeton BotFather. Ne pas l’envoyer en chat.
-2. GitHub → dépôt werti4/uniqlo-alert → Settings → Secrets and variables → Actions → Secrets → crayon sur UA_TELEGRAM_WEBHOOK_SECRET → remplacer par ce code → Update secret.
-3. Cloudflare → Worker uniqlo-telegram-webhook → Settings → Runtime variables and secrets → WEBHOOK_SECRET → Rotate → saisir exactement le même code → Deploy. Ne pas modifier UA_ENCRYPTION_KEY ni les jetons Telegram pour cette correction. Le secret UA_TELEGRAM_WEBHOOK_SECRET supplémentaire côté Cloudflare n’est pas utilisé par le Worker.
-4. Revenir dans cette conversation et signaler uniquement que c’est corrigé. L’agent réouvrira temporairement SETUP_ENABLED avec une nouvelle échéance, puis relancera le seul workflow de configuration (jamais Scanner UNIQLO ou Commandes Telegram pour tester). Aucun secret à recopier dans la conversation, aucun terminal requis.
-
-Après succès du contrôle : refermer SETUP_ENABLED, activer HOURLY_SCAN_ENABLED avec le connecteur et dans wrangler.jsonc, activer temporairement HOURLY_VERIFY_ENABLED pour le diagnostic automatique du prochain horaire naturel. Programmer alors une vérification future via Automations si l’heure n’est pas atteinte ; cette vérification ne doit pas forcer un scan. Ne retirer les anciens on.schedule qu’après preuve Scheduled/dispatch naturel + run scanner correspondant ; conserver workflow_dispatch et déclenchements de favoris. Actualiser le contexte à chaque résultat réel.
-
-Code publié `49265e7` : [CI 40867953541](https://github.com/werti4/uniqlo-alert/actions/runs/40867953541) entièrement réussie. Tests : **67 Python, 33 Node**, services simulés, Wrangler 4.155.0 dry-run réussi. Le workflow d’activation échoué ne contredit pas la CI : son échec identifie une configuration personnelle invalide, pas un test applicatif échoué.
+Limites : ce premier succès ne garantit ni tous les horaires suivants ni une collecte réussie de chaque article ; consulter les dates/erreurs par article. La réception sur l’iPhone d’une véritable future alerte de baisse reste distincte de l’acceptation par Telegram. Aucun abonnement modifié ; architecture compatible Free avec quotas documentés, mais Billing n’est pas lisible via OAuth. Les anciens échecs de format sont résolus : ne pas redemander de recréer les secrets.
 
 Mis à jour le **29 octobre 2026, Europe/Paris**. Ce document décrit l’état courant ; les anciens états sont dans [HISTORY.md](HISTORY.md). Le code et les vérifications datées priment sur les souvenirs de conversation. Une configuration personnelle peut évoluer : la revérifier avant toute conclusion.
 
@@ -45,7 +18,7 @@ Mis à jour le **29 octobre 2026, Europe/Paris**. Ce document décrit l’état 
 
 **Toutes les commandes Telegram actuelles et futures passent obligatoirement par Cloudflare** pour réception, reconnaissance, autorisation et routage. Catalogue unique : `telegram-webhook/commands.json`, partagé avec l’exécutant. Lire [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md) avant toute nouvelle commande. Ne jamais ajouter une fonctionnalité uniquement au polling Python ou à un workflow manuel. Le traitement long d’un scan peut rester dans GitHub Actions, déclenché automatiquement par Cloudflare ; la réception et le résultat final ne sont pas la même garantie de délai.
 
-**Premier déploiement Cloudflare effectué le 29 octobre 2026 à 11:20 Paris. Le Worker et le Durable Object SQLite existent. Dernier contrôle API : les cinq secrets requis sont présents au bon type ; leurs valeurs et droits ne sont pas validés. Le webhook reste non confirmé et HOURLY_SCAN_ENABLED=false. Reprise détaillée : [CODEX_HANDOFF.md](CODEX_HANDOFF.md).** Après chaque ajout de commande, mise à jour du catalogue + traitement + tests + documentation + redéploiement du Worker requis. Une publication GitHub seule ne suffit pas.
+**Premier déploiement Cloudflare effectué le 29 octobre 2026 à 11:20 Paris. Le Worker et le Durable Object SQLite existent. Dernier contrôle API : les cinq secrets requis sont présents au bon type ; leurs valeurs et droits ne sont pas validés. Webhook confirmé et HOURLY_SCAN_ENABLED=true ; premier déclenchement horaire naturel validé (voir état courant). Reprise détaillée : [CODEX_HANDOFF.md](CODEX_HANDOFF.md).** Après chaque ajout de commande, mise à jour du catalogue + traitement + tests + documentation + redéploiement du Worker requis. Une publication GitHub seule ne suffit pas.
 
 ## Objectif et périmètre
 
@@ -54,7 +27,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 - Petite fenêtre automatique sur `www.uniqlo.com`, réductible, et popup depuis l’icône Chrome.
 - Ajout/retrait en un clic de l’article ouvert, sur une fiche France ; aperçu favoris/baisses/alertes et accès au tableau de bord complet.
 - 50 favoris maximum. Les changements sont locaux jusqu’à **Publier les favoris**. Pas de publication automatique implicite.
-- Objectif actuel : Cloudflare demande **un scan par heure**, plus `/scan` Telegram à la demande. Worker déployé, secrets présents, activation horaire en attente de validation des accès et de la liaison. L’ancien calendrier GitHub de 5 minutes reste publié jusqu’à validation de la bascule ; ne pas le retirer prématurément.
+- Objectif actuel : Cloudflare demande **un scan par heure**, plus `/scan` Telegram à la demande. Worker et webhook actifs, accès validés, horaire naturel confirmé à 13:17 Paris. Les anciens calendriers GitHub sont retirés après cette preuve.
 - **Test Telegram reçu par l’utilisateur** ; notifications automatiques facultatives, activation `UA_TELEGRAM_ENABLED=true` confirmée par GitHub dans le scan 40804764809. Ne pas les demander comme préalable aux relevés.
 - Hors périmètre actuel : tout le catalogue, achat automatique, connexion UNIQLO, hébergement payant, contournement de protections, autres projets personnels.
 
@@ -83,7 +56,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 4. **Scanner** : déchiffre, lit les fiches autorisées progressivement, conserve les prix valides et écrit l’état chiffré dans `monitor-data:data/state.enc.json`.
 5. **Actualisation Chrome** : lit/déchiffre les relevés GitHub. Le rafraîchissement local de la petite fenêtre ne lance pas de scan UNIQLO et ne remplace pas une synchronisation GitHub.
 6. **Cloudflare** : webhook `/telegram`, secret officiel Telegram et accès privé au propriétaire, catalogue unique, file persistée avant accusé, puis dispatch automatique de `telegram-commands.yml`. Actions lit `/pending`, exécute la commande puis confirme `/ack`. Résultat final soumis au délai du runner.
-7. **Calendrier Cloudflare** : `17 * * * *` enregistré ; `HOURLY_SCAN_ENABLED=false` garde le dispatch de `scan.yml` inactif tant que les accès ne sont pas prêts. Après activation, 24 demandes/jour, sans garantie de 24 démarrages immédiats ou scans réussis.
+7. **Calendrier Cloudflare** : `17 * * * *` enregistré ; `HOURLY_SCAN_ENABLED=true` active le dispatch de `scan.yml` après validation des accès. Après activation, 24 demandes/jour, sans garantie de 24 démarrages immédiats ou scans réussis.
 
 `main` contient le code et la liste chiffrée. `monitor-data` contient les relevés ; ne pas remplacer son historique par une branche de développement ou fusionner ses snapshots dans `main`.
 
@@ -130,18 +103,18 @@ Aucune valeur de secret dans le dépôt, les logs, le paquet, les captures parta
 | Durable Object | binding `INBOX`, classe `TelegramInbox`, migration `v1`, **SQLite confirmé** |
 | Namespace | `84ca5eaff5764f178aa74c2854fd70be` |
 | Cron enregistré | `17 * * * *` (UTC, minute 17 également à Paris), propagation possible |
-| Dispatch horaire | **Désactivé**, `HOURLY_SCAN_ENABLED=false` |
+| Dispatch horaire | **Activé**, `HOURLY_SCAN_ENABLED=true`, premier horaire naturel confirmé le 29/10 à 13:17 Paris |
 | Variables présentes | `GITHUB_REPOSITORY=werti4/uniqlo-alert`, `GITHUB_BRANCH=main` |
 | Secrets Worker | `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `BOT_USERNAME`, `GITHUB_DISPATCH_TOKEN` présents au type `secret_text` ; valeurs non lues, validité non confirmée |
 | Liaison Actions | Utilisateur indique avoir effectué la configuration guidée ; présence/valeurs actuelles de `UA_TELEGRAM_WEBHOOK_URL`, `UA_TELEGRAM_WEBHOOK_SECRET` et `UA_TELEGRAM_ENABLED` non vérifiables via le connecteur disponible |
-| Webhook Telegram | Pas enregistré par cette tâche ; `getWebhookInfo` réel non accessible sans le jeton renouvelé |
+| Webhook Telegram | Enregistré et confirmé par getWebhookInfo, run 40869512253/job 123439570029 |
 | Accès HTTPS depuis ce cloud | Après propagation et User-Agent applicatif : GET / → 404 JSON ; POST /telegram et /pending sans secret → 403 JSON. Routage public et refus des requêtes non authentifiées confirmés, sans commande ni message |
 
 Le connecteur a permis création du sous-domaine workers.dev, publication du module, migration SQLite, liaison, route workers.dev et cron. La consultation des abonnements est refusée (OAuth sans permission Billing). **Aucun abonnement n’a été créé ou modifié.** Le modèle API `standard` ne prouve pas à lui seul le palier Free ; vérifier Workers Free dans le tableau de bord avant activation. L’architecture est compatible avec Free, selon les quotas documentés dans le guide.
 
 Les secrets GitHub ne sont pas relisibles en clair et aucun outil connecté ne permet ici de créer un PAT personnel limité ni de gérer les variables/secrets Actions. Ne jamais récupérer d’anciens tokens dans les conversations. Saisies masquées et étapes exactes : [guide Cloudflare](../telegram-webhook/README.md). **UA_ENCRYPTION_KEY reste exclusivement dans Actions et Chrome ; ne jamais la transmettre au Worker.** Secrets Telegram existants et favoris conservés.
 
-Dernière vérification GitHub : scan `40840801906`, 29/10/2026 09:15 Paris, réussi, étape « Telegram activé » réussie. C’est une preuve de `UA_TELEGRAM_ENABLED=true` lors de ce run, pas une lecture de la configuration courante ni une validation du nouveau webhook. Les 33 runs consultés ne contenaient aucun lecteur de commandes en cours ; revérifier au moment de la bascule.
+Dernière preuve de scanner : 40872057387 et diagnostic horaire 40872060775, voir état courant. UA_TELEGRAM_ENABLED=true et liaison Actions/Worker ont été vérifiés par la procédure sécurisée.
 
 ## Vérifications de cette tâche et activation restante
 
@@ -150,9 +123,9 @@ Dernière vérification GitHub : scan `40840801906`, 29/10/2026 09:15 Paris, ré
 - HTTP : User-Agent Python par défaut refusé par Cloudflare 1010 ; en-tête `UniqloAlertBridge/1.0` ajouté au bridge Actions et au script local selon la documentation officielle. Routes publiques et contrôle d’accès vérifiés sans secret.
 - API : Worker déployé à 100 %, binding SQLite, migration, variables, cron et domaine vérifiés ; dernier contrôle API : cinq secrets requis présents, noms et types uniquement.
 - Aucun scan réel, aucun message de test Telegram, aucune lecture/déchiffrement de favoris, aucune modification d’extension ou de clé effectués.
-- Reste : vérifier le palier Free, valider les accès déjà saisis sans les redemander inutilement, confirmer les deux paramètres de liaison Actions et vérifier `UA_TELEGRAM_ENABLED=true`, attendre la fin de l’ancien getUpdates, enregistrer puis contrôler le webhook. Activer ensuite `HOURLY_SCAN_ENABLED=true` et conserver cette valeur dans wrangler.jsonc avant les prochains déploiements.
-- À confirmer après activation : `/pending` authentifié, URL/allowed_updates/absence d’erreur via getWebhookInfo, commande réelle demandée par l’utilisateur, puis premier Scheduled naturel et run Actions correspondant. Ne pas forcer de scan pour vérifier.
-- **Migration des calendriers en attente** : après validation Cloudflare, retirer les blocs `on.schedule` de `scan.yml` et `telegram-commands.yml`, conserver `workflow_dispatch` et les déclenchements de favoris. Modifier scan.yml déclenche actuellement un scan au push : publier cette migration avec `[skip actions]` pour respecter l’absence de scan de test, puis vérifier les déclencheurs conservés. Ne pas désactiver les workflows entiers.
+- Reste : observer les futures livraisons d’alertes réelles et les dates/erreurs par article ; vérifier le palier Free dans le tableau de bord si nécessaire, sans souscrire d’offre payante.
+- Webhook, accès et premier horaire naturel confirmés. Chaque prochain scan peut subir retards/erreurs ; aucun suivi en arrière-plan implicite.
+- **Migration des calendriers effectuée après validation** : seuls on.schedule de scan.yml et telegram-commands.yml retirés ; workflow_dispatch et publications de favoris conservés, commit [skip actions].
 
 ## Commandes et mises à jour obligatoires
 
@@ -167,27 +140,3 @@ Mise à jour : récupérer `origin/main` (publications Chrome possibles), conser
 Retour arrière : désactiver le switch horaire, retirer le webhook sans supprimer les messages en attente, attendre la fin des lecteurs webhook, vider la variable Actions d’URL et rétablir un seul calendrier GitHub si nécessaire. Le code polling reste un fallback, jamais simultané au webhook. Ne pas supprimer le Durable Object ni sa file ; ne pas régénérer la clé des favoris.
 
 Publication initiale `ac89367` : [CI 40857882653](https://github.com/werti4/uniqlo-alert/actions/runs/40857882653) entièrement réussie, tests Python/Node, popup CSP, icônes et paquet. Le correctif User-Agent ultérieur est couvert par les 63 tests Python locaux et une CI distincte.
-
-## Dernier relais vers Codex — 29 octobre 2026
-
-L’utilisateur a été guidé sur iPhone jusqu’à Settings → Runtime variables and secrets → Production. Contrôle API après sa confirmation : cinq secrets requis présents au type secret_text ; variables GITHUB_REPOSITORY/BRANCH correctes et HOURLY_SCAN_ENABLED=false ; INBOX présent ; cron 17 * * * * inchangé. Secret supplémentaire UA_TELEGRAM_WEBHOOK_SECRET aussi présent côté Cloudflare : non utilisé par le code (le nom attendu dans Cloudflare est WEBHOOK_SECRET). Ce n’est pas une preuve de sa présence dans GitHub, ni d’égalité des valeurs. Ne pas supprimer ou remplacer automatiquement des secrets.
-
-L’utilisateur a présenté un message BotFather annonçant le remplacement du jeton ; sa valeur est restée masquée. Consigne donnée : même jeton Telegram actuel dans TELEGRAM_BOT_TOKEN côté Cloudflare et Actions. Son remplacement effectif dans Actions reste à confirmer, car le connecteur n’accède pas à ces paramètres. Ne jamais reprendre un ancien jeton d’historique ni confondre jeton BotFather et secret commun webhook.
-
-L’enregistrement Telegram n’a pas été effectué par l’agent. getWebhookInfo, /pending authentifié, PAT Actions write et identité du propriétaire restent non vérifiés. Aucun scan réel ou message de test lancé. Aucun nouvel essai applicatif pour ce relais documentaire. CI du code 1296f30 : [40858332943](https://github.com/werti4/uniqlo-alert/actions/runs/40858332943), succès complet. Lire [CODEX_HANDOFF.md](CODEX_HANDOFF.md) pour la prochaine action sûre, les limites d’outils et les étapes conditionnelles.
-
-### Reprise Codex depuis `5de84c1` — 29 octobre 2026
-
-Dernière version de `origin/main` récupérée en fast-forward dans `/workspace/uniqlo-alert` ; AGENTS.md, CODEX_HANDOFF.md, PROJECT_CONTEXT.md, DEVELOPMENT.md et les guides Telegram/Cloudflare lus. Dans cette conversation de reprise, aucun outil Cloudflare n’est exposé et l’état de l’environnement ne déclare ni secret, ni variable applicative, ni identité sortante. Les accès du connecteur de la conversation précédente ne sont donc pas disponibles ici ; cela ne signifie pas que les secrets déployés manquent. Aucun secret recréé ou lu, aucun changement de production, aucun scan réel ni message de test.
-
-Contrôle public du workflow Commandes Telegram : trois exécutions listées, toutes terminées avec succès (`40844380981`, `40842871229`, `40842671253`), aucune en cours ou en attente dans cette liste au moment de la consultation. Ce constat ne confirme ni la configuration actuelle des variables Actions, ni le webhook, ni le traitement effectif d’une commande. La prochaine étape reste le contrôle en lecture seule `python3 tools/register_telegram_webhook.py --check` sur un poste disposant du jeton actuel par saisie masquée, puis l’enregistrement conditionnel décrit dans CODEX_HANDOFF.md. Ne pas activer l’horaire ni retirer les anciens calendriers avant validation des prérequis.
-
-## Activation depuis iPhone sans terminal — préparation du 29 octobre 2026
-
-L’utilisateur demande désormais de terminer ici avec le connecteur Cloudflare, sans terminal ni secret dans le chat. Le blocage de la conversation Codex dépourvue de connecteur ne s’applique pas à celle-ci. Ne recréer ni Worker ni secrets.
-
-Procédure préparée : workflow dédié configure-cloudflare.yml + tools/configure_cloudflare.py + routes /configure (temporaires, SETUP_ENABLED=true et SETUP_EXPIRES_AT futur requis) et /configuration-status (lecture seule), toutes authentifiées par X-Bridge-Secret. Actions utilise ses secrets existants et envoie une preuve HMAC du jeton/chat ; le Worker vérifie la concordance, getMe/getChat, le username, les workflows actifs et l’absence de lecteur Commandes Telegram en cours. Le PAT Worker doit réussir un dispatch du seul workflow de diagnostic en verify_only=true pour prouver Actions write ; aucun scan ou message de test. Puis setWebhook est appelé sans supprimer les updates, et getWebhookInfo vérifie URL/allowed_updates/max_connections. Aucun accès à UA_ENCRYPTION_KEY dans cette procédure.
-
-État à cet instant : code préparé/testé, résultat de configuration réelle encore à confirmer. SETUP_ENABLED et HOURLY_VERIFY_ENABLED sont false par défaut dans les sources ; l’activation temporaire est faite via le connecteur en conservant tous les secrets avec inherit strict. Fermer SETUP_ENABLED après l’essai. Ne passer HOURLY_SCAN_ENABLED à true qu’après succès attesté du workflow. Le switch temporaire HOURLY_VERIFY_ENABLED permet au prochain horaire naturel de déclencher un diagnostic en lecture seule, avec l’heure du dispatch mémorisée dans le DO. Après validation, désactiver ce switch, retirer les anciens on.schedule GitHub et le déclencheur push d’activation ; conserver workflow_dispatch et les workflows scanner/commandes.
-
-Le commit de préparation ne touche ni scanner, ni scan.yml, ni favoris/extension. Les contrôles simulés passent ; aucun vrai scan ni message de test n’est envoyé pour développer cette procédure. Le statut réel et les étapes restantes doivent être actualisés après l’essai.

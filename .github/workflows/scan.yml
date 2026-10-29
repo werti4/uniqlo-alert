@@ -1,9 +1,6 @@
 name: Scanner UNIQLO
 
 on:
-  schedule:
-    # GitHub may delay or omit scheduled runs. These are requested start times.
-    - cron: '2-57/5 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -52,7 +49,7 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write(f'ready={str(ready).lower()}\n')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
-              summary.write('Planification : toutes les 5 minutes demandées, avec retards ou omissions possibles. Les changements de favoris publiés déclenchent aussi un scan.\n\n')
+              summary.write('Planification : Cloudflare demande un scan horaire à :17 ; démarrage et réussite non garantis. Les changements de favoris publiés déclenchent aussi un scan.\n\n')
               if not ready:
                   summary.write('## Configuration requise — surveillance inactive\n\n')
                   summary.write('Il manque :\n\n' + ''.join(f'- {item}\n' for item in missing))
@@ -96,4 +93,4 @@ jobs:
                   summary.write('\n**Scanner terminé.** Consultez les dates de relevé et les statuts chiffrés dans l’extension.\n')
               else:
                   summary.write('\n**Scanner non terminé ou en échec.** Les derniers prix valides restent conservés. Consultez l’extension et les étapes en échec.\n')
-              summary.write('\nPlanification demandée : toutes les 5 minutes, avec retards ou omissions possibles côté GitHub.\n')
+              summary.write('\nPlanification demandée par Cloudflare : une fois par heure à :17, avec retards ou échecs possibles côté GitHub.\n')

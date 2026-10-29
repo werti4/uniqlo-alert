@@ -274,3 +274,13 @@ L’utilisateur a demandé si un scan avant chaque /favoris serait coûteux. Rec
 Validation locale : 57 tests Python, 27 tests Node réussis, dont six nouveaux tests sur promotions, prix manquants/anciens/erreurs, liste vide/illisible, 50 favoris paginés, accès propriétaire et absence de scan. Cloudflare toujours non déployé selon le dernier état confirmé. Aucun scan ni message réel forcés. Inventaire courant : /logs, /scan, /favoris.
 
 /favoris publié (`f99c27d`), [job CI 40854426246](https://github.com/werti4/uniqlo-alert/actions/runs/40854426246) terminé avec toutes les étapes réussies, 57 tests Python et 27 tests Node. Catalogue inclus dans l’assemblage Wrangler --dry-run réussi. Aucun scan ni déploiement réel effectués ; la commande sera active après configuration Cloudflare et validation d’une réponse privée réelle.
+
+
+## Résolution de la configuration iPhone — 29 octobre 2026
+
+Les essais de 40867953571 et 40869512253 ont diagnostiqué un secret commun GitHub invalide (caractères, puis longueur insuffisante), sans afficher sa valeur ni appeler Telegram. Après correction utilisateur : 40869512253/job 123439570029 réussi, webhook confirmé, accès validés. Deux updates en attente livrés. Horaire activé avec accès administratif refermé ; première preuve naturelle reste à obtenir. Les anciens diagnostics bloquants ont été retirés de l’en-tête courant et restent consultables dans les commits 9bf0f47, c215702 et 5fa5127.
+
+
+## Premier horaire naturel validé — 29 octobre 2026, 13:17 Paris
+
+Scanner 40872057387 et diagnostic 40872060775 réussis ; VERIFY_HOUR et lastHourlyDispatch 498132, webhook confirmé sans erreur, files Telegram/DO vides. Après cette preuve, anciens on.schedule GitHub retirés avec commit [skip actions], HOURLY_VERIFY_ENABLED=false et SETUP_ENABLED=false, horaire Cloudflare conservé true. La tâche ponctuelle de 13:25 a été désactivée, sa vérification ayant déjà été faite. Aucun scan ni message de test forcé ; aucun favori/clé modifié.
