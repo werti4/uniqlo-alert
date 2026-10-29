@@ -153,3 +153,7 @@ Envoyer `/scan` dans votre conversation privée avec le bot (ou `/scan@NomDuBot`
 La commande n’est pas instantanée : elle dépend de la lecture différée des messages par Actions. Le problème de planification connu peut aussi bloquer cette lecture. Un seul scan par passage est autorisé ; une demande est enregistrée comme consommée avant le lancement afin de ne pas répéter un scan automatiquement si une réponse Telegram échoue. Si l’exécution est interrompue, consulter /logs et Actions avant de renvoyer volontairement /scan.
 
 Les workflows de commandes et de scanner partagent désormais le groupe de concurrence `uniqlo-monitor` pour protéger l’historique chiffré. Ne pas lancer un autre lecteur getUpdates. Aucun nouveau secret ni changement d’extension requis.
+
+## Réponse sans lancement manuel : mode webhook
+
+Voir [le guide de déploiement Cloudflare](../telegram-webhook/README.md). Le code est préparé, **le service n’est pas déployé**. Un compte Workers avec Durable Object SQLite et une configuration de secrets sont nécessaires. L’accusé de réception sera rapide après activation ; l’exécution du scan restera soumise aux délais GitHub Actions. Le webhook ne résout pas le calendrier des scans périodiques. Aucun jeton dans le chat.

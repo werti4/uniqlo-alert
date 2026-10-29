@@ -2,7 +2,7 @@ name: Vérifier le projet
 on:
   push:
     branches: [main]
-    paths: ['extension/**', 'scanner/**', 'tests/**', 'tools/**', 'requirements.txt', 'package.json', '.github/workflows/**']
+    paths: ['extension/**', 'scanner/**', 'tests/**', 'tools/**', 'telegram-webhook/**', 'requirements.txt', 'package.json', '.github/workflows/**']
   pull_request:
     branches: [main]
 permissions:

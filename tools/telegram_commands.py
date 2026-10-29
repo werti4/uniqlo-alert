@@ -159,6 +159,36 @@ def process(updates, chat_id, username, cursor, report, send, save, scan=None):
     return replies
 
 
+def bridge(url, secret, method, payload):
+    from urllib.parse import urlsplit
+    host = urlsplit(url)
+    if host.scheme != 'https' or not host.netloc or host.username or host.password or host.query or host.fragment or not secret:
+        raise ValueError('Configuration webhook invalide.')
+    request = urllib.request.Request(url.rstrip('/') + '/' + method, method='POST',
+        data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json', 'X-Bridge-Secret': secret})
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            data = json.load(response)
+        if not isinstance(data, dict):
+            raise ValueError()
+        return data
+    except Exception:
+        raise RuntimeError('Récepteur webhook indisponible ; aucun identifiant affiché.') from None
+
+
+def webhook_updates(data, chat_id):
+    commands = data.get('commands')
+    if not isinstance(commands, list) or len(commands) > 3:
+        raise ValueError('File de commandes invalide.')
+    updates = []
+    for item in commands:
+        if type(item.get('id')) is not int or item['id'] < 0 or item.get('command') not in ('/logs', '/scan'):
+            raise ValueError('Commande webhook invalide.')
+        updates.append({'update_id': item['id'], 'message': {'text': item['command'],
+            'chat': {'id': int(chat_id), 'type': 'private'}, 'from': {'id': int(chat_id), 'is_bot': False}}})
+    return updates
+
+
 def run():
     token, chat_id, key = (os.getenv(name, '').strip() for name in ['TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID', 'UA_ENCRYPTION_KEY'])
     repo = os.getenv('GITHUB_REPOSITORY', '')
@@ -170,7 +200,12 @@ def run():
     bot = telegram(token, 'getMe', {})
     if not bot.get('is_bot') or not isinstance(bot.get('username'), str):
         raise ValueError('Identité du bot invalide.')
-    updates = telegram(token, 'getUpdates', {'offset': cursor + 1 if cursor is not None else 0, 'limit': 100, 'timeout': 0, 'allowed_updates': ['message']})
+    webhook_url = os.getenv('UA_TELEGRAM_WEBHOOK_URL', '').strip()
+    webhook_secret = os.getenv('UA_TELEGRAM_WEBHOOK_SECRET', '').strip()
+    if webhook_url:
+        updates = webhook_updates(bridge(webhook_url, webhook_secret, 'pending', {}), chat_id)
+    else:
+        updates = telegram(token, 'getUpdates', {'offset': cursor + 1 if cursor is not None else 0, 'limit': 100, 'timeout': 0, 'allowed_updates': ['message']})
     if not isinstance(updates, list):
         raise ValueError('Réponse de commandes invalide.')
     cache = []
@@ -201,6 +236,8 @@ def run():
         cache.clear()
         execute(send)
     count = process(updates, chat_id, bot['username'], cursor, report, send, store.save, scan=scan)
+    if webhook_url and updates:
+        bridge(webhook_url, webhook_secret, 'ack', {'through': max(item['update_id'] for item in updates)})
     print(f'Commandes Telegram traitées : {count} commande(s). Scans uniquement sur demande /scan autorisée.')
 
 

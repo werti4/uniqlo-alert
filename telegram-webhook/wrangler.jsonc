@@ -1,0 +1,8 @@
+{
+  "name": "uniqlo-telegram-webhook",
+  "main": "worker.mjs",
+  "compatibility_date": "2025-09-01",
+  "workers_dev": true,
+  "durable_objects": {"bindings": [{"name": "INBOX", "class_name": "TelegramInbox"}]},
+  "migrations": [{"tag": "v1", "new_sqlite_classes": ["TelegramInbox"]}]
+}

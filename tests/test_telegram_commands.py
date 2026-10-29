@@ -68,3 +68,20 @@ class CommandTests(unittest.TestCase):
         with patch('urllib.request.urlopen',side_effect=RuntimeError('https://api.telegram.org/botSECRET/sendMessage')):
             with self.assertRaises(RuntimeError) as error:telegram('SECRET','getUpdates',{})
         self.assertNotIn('SECRET',str(error.exception))
+
+class WebhookUpdatesTests(unittest.TestCase):
+    def test_trusted_queue_rebuilt_without_freeform_messages(self):
+        from tools.telegram_commands import webhook_updates
+        updates=webhook_updates({'commands':[{'id':9,'command':'/scan'}]},'123')
+        scan=Mock()
+        process(updates,'123','bot',None,lambda:'safe',Mock(),Mock(),scan=scan)
+        scan.assert_called_once()
+        for payload in [{'commands':[{'id':9,'command':'/unknown'}]},{'commands':[{'id':True,'command':'/scan'}]},{'commands':[{'id':1,'command':'/logs'}]*4}]:
+            with self.assertRaises(ValueError):webhook_updates(payload,'123')
+
+    def test_bridge_requires_https_and_hides_errors(self):
+        from tools.telegram_commands import bridge
+        with self.assertRaises(ValueError):bridge('http://example','secret','pending',{})
+        with patch('urllib.request.urlopen',side_effect=RuntimeError('PRIVATE')):
+            with self.assertRaises(RuntimeError) as error:bridge('https://example','secret','pending',{})
+        self.assertNotIn('PRIVATE',str(error.exception))
