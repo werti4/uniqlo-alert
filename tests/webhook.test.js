@@ -67,3 +67,14 @@ test('refused hourly dispatch does not record a successful hour',async()=>{
   assert.equal(ctx.data.get('lastHourlyDispatch'),undefined);
  }finally{globalThis.fetch=original;}
 });
+
+test('all catalogue commands are routed by Cloudflare and have receipts',async()=>{
+ const {COMMANDS}=await import('../telegram-webhook/commands.mjs');
+ for(const [name,entry] of Object.entries(COMMANDS)){
+  assert.deepEqual(commandOf(update(1,123,'/'+name),env),{id:1,command:'/'+name});
+  assert.deepEqual(commandOf(update(1,123,'/'+name+'@MyBot'),env),{id:1,command:'/'+name});
+  assert.ok(entry.receipt.includes('/'+name));assert.ok(entry.description);
+ }
+ assert.equal(commandOf(update(1,123,'/unregistered_command'),env),null);
+ assert.equal(commandOf(update(1,123,'/constructor'),env),null);
+});

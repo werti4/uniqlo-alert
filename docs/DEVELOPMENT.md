@@ -2,6 +2,10 @@
 
 Lire d’abord [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), puis l’état Git et les fichiers concernés. L’historique archivé n’est pas une liste d’actions à répéter. Utiliser le checkout existant ; chaque tâche cloud est déjà isolée, pas de worktree sauf demande explicite.
 
+## Règle prioritaire pour toute commande Telegram
+
+Lire [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md). Cloudflare est le point d’entrée unique actuel et futur. Modifier le catalogue partagé `telegram-webhook/commands.json`, intégrer le traitement, tester chaque commande, mettre à jour le contexte et redéployer le Worker. Ne pas livrer une commande Python/Actions seule ni confondre publication GitHub et activation Cloudflare.
+
 ## Où intervenir
 
 | Changement demandé | Fichiers principaux | Contrôles associés |

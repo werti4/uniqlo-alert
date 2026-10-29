@@ -2,6 +2,8 @@
 
 Lire `docs/PROJECT_CONTEXT.md`, puis `docs/DEVELOPMENT.md` et les fichiers concernés avant de modifier le projet.
 `docs/HISTORY.md` est une archive : ne pas appliquer ses anciens blocages comme état courant.
+**Toute commande Telegram actuelle ou future doit être enregistrée dans `telegram-webhook/commands.json` et intégrée au point d’entrée Cloudflare. Lire `docs/TELEGRAM_COMMANDS.md` avant tout ajout ; une commande uniquement implémentée en Python/Actions est incomplète. GitHub peut exécuter un travail long, mais ne doit pas nécessiter de lancement manuel utilisateur. Le déploiement Cloudflare reste à effectuer.**
+
 Le code et les résultats vérifiés priment sur un ancien message de conversation.
 
 - Outil personnel gratuit : extension Chrome Manifest V3, UNIQLO France, EUR.

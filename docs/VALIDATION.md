@@ -75,3 +75,7 @@ Préparation webhook publiée (`5c74690`, ajustement de confidentialité `e3d18c
 49 tests Python et 26 tests Node réussis localement. Les nouveaux cas vérifient un dispatch scan.yml par heure confirmée, aucun message de routine Telegram, switch désactivé, route horaire HTTP non exposée et absence de validation d’un dispatch refusé. Cron `17 * * * *`, HOURLY_SCAN_ENABLED="false" par défaut. Service non déployé : aucun événement Scheduled Cloudflare ni scan horaire réel validé. Ancien cron GitHub encore publié, doublons possibles s’il reprend après activation de Cloudflare ; migration après validation externe.
 
 [CI 40846436147 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40846436147), commit `ff9214e`. Assemblage Wrangler --dry-run validé avec le cron horaire et le switch désactivé. Aucun événement horaire réel ni déploiement validé.
+
+## Catalogue Cloudflare de toutes les commandes
+
+51 tests Python et 27 tests Node réussis localement. Nouveau contrôle : chaque nom du catalogue partagé est reconnu par Cloudflare et possède un traitement compatible ; un traitement absent est rejeté. La cible et la procédure des futures commandes sont formalisées dans TELEGRAM_COMMANDS.md et AGENTS.md. Services simulés : aucun déploiement ni commande réelle validés.

@@ -1,3 +1,4 @@
+import {COMMANDS, definition} from './commands.mjs';
 // No message contents or credentials are logged. One persistent inbox per bot.
 const json = (data, status = 200) => Response.json(data, {status});
 const equal = async (a, b) => {
@@ -11,8 +12,8 @@ export function commandOf(update, env) {
   const m = update?.message;
   if (m?.chat?.type !== 'private' || String(m.chat.id) !== env.TELEGRAM_CHAT_ID ||
       String(m.from?.id) !== env.TELEGRAM_CHAT_ID || m.from?.is_bot || !Number.isSafeInteger(update.update_id) || update.update_id < 0) return null;
-  const match = typeof m.text === 'string' && m.text.trim().match(/^\/(logs|scan)(?:@([\w]+))?\s*$/i);
-  if (!match || (match[2] && match[2].toLowerCase() !== env.BOT_USERNAME?.toLowerCase())) return null;
+  const match = typeof m.text === 'string' && m.text.trim().match(/^\/([a-z][a-z0-9_]{0,31})(?:@([\w]+))?\s*$/i);
+  if (!match || !Object.hasOwn(COMMANDS, match[1].toLowerCase()) || (match[2] && match[2].toLowerCase() !== env.BOT_USERNAME?.toLowerCase())) return null;
   return {id: update.update_id, command: '/' + match[1].toLowerCase()};
 }
 export default {
@@ -59,7 +60,7 @@ export class TelegramInbox {
     try {
     const response = await fetch(`https://api.telegram.org/bot${this.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST', signal: AbortSignal.timeout(6000), headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({chat_id: this.env.TELEGRAM_CHAT_ID, text: command === '/scan' ? '📥 Demande /scan reçue. En attente de prise en charge par GitHub ; le bot confirmera « Scan en cours » au démarrage.' : '📥 Commande /logs reçue. Récupération du diagnostic demandée à GitHub.'})
+      body: JSON.stringify({chat_id: this.env.TELEGRAM_CHAT_ID, text: definition(command)?.receipt || 'Commande indisponible.'})
     });
     const result = await response.json(); if (!response.ok || result.ok !== true) throw Error('receipt refused');
     } catch { throw Error('receipt unavailable'); }

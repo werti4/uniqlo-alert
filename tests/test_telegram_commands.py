@@ -85,3 +85,19 @@ class WebhookUpdatesTests(unittest.TestCase):
         with patch('urllib.request.urlopen',side_effect=RuntimeError('PRIVATE')):
             with self.assertRaises(RuntimeError) as error:bridge('https://example','secret','pending',{})
         self.assertNotIn('PRIVATE',str(error.exception))
+
+class CatalogueTests(unittest.TestCase):
+    def test_every_cloudflare_command_has_a_backend_handler(self):
+        from tools.telegram_commands import COMMANDS, load_catalogue
+        self.assertEqual(COMMANDS,load_catalogue())
+        for name,definition in COMMANDS.items():
+            send,scan=Mock(),Mock()
+            count=process([update(1,'/'+name)],'123','bot',None,lambda:'safe',send,Mock(),scan=scan)
+            self.assertEqual(count,1)
+            self.assertEqual(scan.called,definition['handler']=='scan')
+            self.assertTrue(send.called)
+
+    def test_unsupported_handler_cannot_be_silently_deployed(self):
+        from tools.telegram_commands import load_catalogue
+        with patch('pathlib.Path.read_text',return_value='[{"name":"future","handler":"forgotten"}]'):
+            with self.assertRaises(ValueError):load_catalogue()

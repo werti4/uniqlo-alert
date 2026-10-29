@@ -1,0 +1,14 @@
+[
+  {
+    "name": "logs",
+    "description": "Consulter le diagnostic des scans",
+    "handler": "logs",
+    "receipt": "📥 Commande /logs reçue. Récupération du diagnostic demandée à GitHub."
+  },
+  {
+    "name": "scan",
+    "description": "Scanner mes favoris publiés et afficher les promotions",
+    "handler": "scan",
+    "receipt": "📥 Demande /scan reçue. En attente de prise en charge par GitHub ; le bot confirmera « Scan en cours » au démarrage."
+  }
+]

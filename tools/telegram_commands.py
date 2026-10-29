@@ -14,6 +14,22 @@ CURSOR_PATH = '/contents/data/telegram-commands.enc.json?ref=monitor-data'
 MAX_REPLIES = 3
 
 
+def load_catalogue():
+    from pathlib import Path
+    definitions = json.loads((Path(__file__).resolve().parents[1] / 'telegram-webhook/commands.json').read_text())
+    supported = {'logs', 'scan'}
+    catalogue = {}
+    for item in definitions:
+        name = item.get('name', '')
+        if not re.fullmatch(r'[a-z][a-z0-9_]{0,31}', name) or item.get('handler') not in supported or name in catalogue:
+            raise ValueError('Commande Cloudflare sans implémentation compatible.')
+        catalogue[name] = item
+    return catalogue
+
+
+COMMANDS = load_catalogue()
+
+
 def telegram(token, method, payload):
     request = urllib.request.Request(
         f'https://api.telegram.org/bot{token}/{method}',
@@ -133,8 +149,11 @@ def process(updates, chat_id, username, cursor, report, send, save, scan=None):
         text = message.get('text') or ''
         command = text.split()[0] if isinstance(text, str) and text.split() else ''
         command = command.lower()
-        is_logs = command in ('/logs', '/logs@' + username.lower())
-        is_scan = command in ('/scan', '/scan@' + username.lower()) and scan is not None
+        name, separator, suffix = command[1:].partition('@')
+        definition = COMMANDS.get(name) if command.startswith('/') and (not separator or suffix == username.lower()) else None
+        handler = definition['handler'] if definition else None
+        is_logs = handler == 'logs'
+        is_scan = handler == 'scan' and scan is not None
         if authorized and (is_logs or is_scan):
             if replies >= MAX_REPLIES:
                 break
@@ -182,7 +201,7 @@ def webhook_updates(data, chat_id):
         raise ValueError('File de commandes invalide.')
     updates = []
     for item in commands:
-        if type(item.get('id')) is not int or item['id'] < 0 or item.get('command') not in ('/logs', '/scan'):
+        if type(item.get('id')) is not int or item['id'] < 0 or item.get('command') not in {'/' + name for name in COMMANDS}:
             raise ValueError('Commande webhook invalide.')
         updates.append({'update_id': item['id'], 'message': {'text': item['command'],
             'chat': {'id': int(chat_id), 'type': 'private'}, 'from': {'id': int(chat_id), 'is_bot': False}}})

@@ -2,6 +2,12 @@
 
 Mis à jour le **29 octobre 2026, Europe/Paris**. Ce document décrit l’état courant ; les anciens états sont dans [HISTORY.md](HISTORY.md). Le code et les vérifications datées priment sur les souvenirs de conversation. Une configuration personnelle peut évoluer : la revérifier avant toute conclusion.
 
+## Décision prioritaire — commandes Telegram dans Cloudflare
+
+**Toutes les commandes Telegram actuelles et futures passent obligatoirement par Cloudflare** pour réception, reconnaissance, autorisation et routage. Catalogue unique : `telegram-webhook/commands.json`, partagé avec l’exécutant. Lire [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md) avant toute nouvelle commande. Ne jamais ajouter une fonctionnalité uniquement au polling Python ou à un workflow manuel. Le traitement long d’un scan peut rester dans GitHub Actions, déclenché automatiquement par Cloudflare ; la réception et le résultat final ne sont pas la même garantie de délai.
+
+L’utilisateur confirme que la configuration Cloudflare n’a pas encore été lancée. Le code est préparé, **aucun déploiement ni webhook réel n’est confirmé**. Après chaque ajout de commande, mise à jour du catalogue + traitement + tests + documentation + redéploiement du Worker requis. Une publication GitHub seule ne suffit pas.
+
 ## Objectif et périmètre
 
 Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**, avec lecture des prix sur GitHub Actions, même PC éteint. Dépôt : [werti4/uniqlo-alert](https://github.com/werti4/uniqlo-alert), branche de code `main`.
@@ -142,3 +148,5 @@ Activation explicite requise : HOURLY_SCAN_ENABLED="true" après déploiement et
 Validation locale : 49 tests Python, 26 tests Node réussis, dont trois tests du calendrier horaire (dispatch vers scanner distinct des commandes, déduplication, switch désactivé, route publique refusée, échec non enregistré). Le service reste préparé et non hébergé ; les disponibilités externes et le blocage UNIQLO peuvent empêcher un scan complet. Aucun scan réel lancé par l’agent.
 
 Préparation horaire publiée (`ff9214e`), [CI 40846436147 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40846436147), 49 tests Python et 26 tests Node. Wrangler --dry-run réussi avec le binding Durable Object et HOURLY_SCAN_ENABLED=false. Aucun déploiement, événement horaire réel ni scan forcé. Étape externe restante : compte Cloudflare, secrets, déploiement et activation explicite.
+
+Consolidation du contrat Telegram : catalogue partagé /logs et /scan, reconnaissance et accusés dérivés du catalogue côté Cloudflare, autorisation/bornes maintenues côté exécutant. Tests de couverture de chaque commande et rejet d’un traitement non implémenté ajoutés : 51 tests Python, 27 tests Node réussis localement. Aucun changement du calendrier ou scan forcé ; aucun déploiement.
