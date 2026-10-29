@@ -284,3 +284,11 @@ Les essais de 40867953571 et 40869512253 ont diagnostiqué un secret commun GitH
 ## Premier horaire naturel validé — 29 octobre 2026, 13:17 Paris
 
 Scanner 40872057387 et diagnostic 40872060775 réussis ; VERIFY_HOUR et lastHourlyDispatch 498132, webhook confirmé sans erreur, files Telegram/DO vides. Après cette preuve, anciens on.schedule GitHub retirés avec commit [skip actions], HOURLY_VERIFY_ENABLED=false et SETUP_ENABLED=false, horaire Cloudflare conservé true. La tâche ponctuelle de 13:25 a été désactivée, sa vérification ayant déjà été faite. Aucun scan ni message de test forcé ; aucun favori/clé modifié.
+
+## Consolidation après retour utilisateur — 29 octobre 2026
+
+Après `5fdd32a`, l’utilisateur indique que tout semble bien fonctionner. Lecture seule des runs : commandes 40873511528 et 40874426522 réussies à 13:28 et 13:34 Paris. Aucun run lancé par l’agent pour ce point documentaire.
+
+Contexte et relais raccourcis, preuves regroupées dans VALIDATION.md, guides d’installation/exploitation corrigés : plus d’instruction actuelle de polling cinq minutes ou d’activation à terminer. Cinq secrets requis distingués du sixième inutilisé, étapes iPhone de lecture/maintenance et règle de déploiement des futures commandes conservées. Les anciennes preuves détaillées restent aussi consultables dans [VALIDATION.md avant consolidation](https://github.com/werti4/uniqlo-alert/blob/5fdd32a2fcae5ecc41cb8200a3f8c1af575058ad/docs/VALIDATION.md).
+
+Modification documentaire uniquement, sans changement du Worker, workflows, secrets, favoris, clé, réglages ou extension. Vérification de cohérence/liens/diff ; pas de nouvelle suite applicative ni scan/message de test.

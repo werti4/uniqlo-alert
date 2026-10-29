@@ -36,7 +36,7 @@ Le premier relevé ne génère pas d'alerte. Un article déjà en promotion lors
 
 - Dépôt public et runners Linux standard GitHub Actions ; aucun service payant ou serveur personnel nécessaire. Les conditions et quotas des services peuvent évoluer.
 - Favoris chiffrés dans `data/watchlist.enc.json` sur la branche principale ; relevés chiffrés dans `data/state.enc.json` sur `monitor-data`.
-- AES-256-GCM, clé partagée entre l'extension et le secret Actions `UA_ENCRYPTION_KEY`. Les jetons Telegram restent dans les secrets Actions.
+- AES-256-GCM, clé partagée entre l'extension et le secret Actions `UA_ENCRYPTION_KEY`. Les jetons Telegram restent dans les secrets Actions et Worker ; aucune clé de favoris dans le Worker.
 - Le jeton GitHub et la clé sont conservés localement par Chrome. Ce stockage n'est pas un coffre-fort matériel ; protéger le profil de navigateur et sauvegarder la clé séparément.
 - Le dépôt public expose le code et les métadonnées des commits/exécutions. Le chiffrement protège le contenu des favoris, pas l'existence ni la taille des mises à jour.
 - Les exports volontaires des favoris sont en clair et ne contiennent aucun jeton.
@@ -47,7 +47,7 @@ Le premier relevé ne génère pas d'alerte. Un article déjà en promotion lors
 | --- | --- |
 | `extension/` | Extension et interface, sans bibliothèque externe |
 | `scanner/monitor.py` | Lecture UNIQLO, historique chiffré, file Telegram |
-| `.github/workflows/scan.yml` | Planification et exécution du scanner |
+| `.github/workflows/scan.yml` | Exécution du scanner, demandée chaque heure par Cloudflare |
 | `.github/workflows/check.yml` | Tests et paquet installable |
 | `tools/generate_icons.py` | Restauration des icônes PNG depuis leurs sources texte |
 | `tests/` | Régressions Python, JavaScript et compatibilité du chiffrement |
@@ -76,6 +76,6 @@ Les tests utilisent des données synthétiques et ne scannent pas UNIQLO. Les te
 - Pas de garantie de stock, d'avantage membre ou de réduction à appliquer au panier.
 - Les notifications dépendent du bon fonctionnement de GitHub, UNIQLO, Telegram et des réglages de notifications de l'iPhone.
 - Un arrêt brutal juste après l'envoi Telegram mais avant sa sauvegarde peut produire un doublon au réessai ; `sendMessage` ne fournit pas de garantie exactement une fois.
-- GitHub peut désactiver les scans planifiés d'un dépôt public après 60 jours sans activité. Vérifier régulièrement Actions ; aucun mécanisme ne crée artificiellement de l'activité.
+- Vérifier régulièrement les dernières exécutions et les dates de prix. Les anciens calendriers GitHub sont retirés ; le calendrier actif est Cloudflare, sans garantie de disponibilité.
 
 Outil personnel indépendant, sans affiliation avec UNIQLO.

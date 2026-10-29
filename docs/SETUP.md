@@ -1,5 +1,7 @@
 # Configurer sa surveillance
 
+**Pour werti4/uniqlo-alert, la configuration est déjà terminée.** Webhook Cloudflare et scan horaire à `:17` actifs, premier déclenchement naturel validé ; aucun secret à recréer. Ce guide sert à une nouvelle installation ou à la maintenance. [État courant](PROJECT_CONTEXT.md) et [contrôle depuis iPhone](../telegram-webhook/README.md#contrôle-et-maintenance-depuis-iphone).
+
 ## 1. Installer l'extension
 
 Dans [Actions](https://github.com/werti4/uniqlo-alert/actions), ouvrir une exécution réussie de **Vérifier le projet**, puis télécharger l'artefact `uniqlo-alert-extension`. Décompresser l'archive. Si elle contient `uniqlo-alert-extension.zip`, décompresser aussi ce second fichier pour obtenir `manifest.json`.
@@ -58,40 +60,15 @@ Pour démarrer les relevés sans Telegram, passez directement à l’étape 5.
 | `TELEGRAM_BOT_TOKEN` | Jeton fourni par BotFather |
 | `TELEGRAM_CHAT_ID` | Identifiant numérique de la conversation personnelle |
 
-### Trouver son chat_id sans exposer le jeton dans une URL de navigateur
+### Identité et jeton existants
 
-Si Python 3 est installé, exécuter ce petit script dans un terminal local. Le jeton est demandé sans affichage et n'est pas écrit dans l'historique de commandes. Envoyer d'abord un message au bot ; sinon le résultat peut être vide.
+Pour ce dépôt, le bot renouvelé et le propriétaire privé sont déjà validés. Conserver les valeurs stockées ; ne pas recréer le bot ni utiliser un ancien token révoqué. Le token est distinct du secret partagé de webhook. En cas de nouvelle installation, établir l’identifiant du compte personnel avant l’activation avec les outils sécurisés disponibles ; ne pas mettre le token dans une URL Safari ou dans le chat.
 
-```python
-import getpass
-import json
-import urllib.request
+Ne pas appeler `getUpdates` sur ce bot : son webhook est actif. Le mode polling est uniquement un retour arrière après retrait contrôlé du webhook, selon le guide Cloudflare.
 
-token = getpass.getpass("Jeton du bot Telegram : ").strip()
-try:
-    request = urllib.request.Request(
-        "https://api.telegram.org/bot" + token + "/getUpdates",
-        data=b"{}", headers={"Content-Type": "application/json"}, method="POST"
-    )
-    with urllib.request.urlopen(request, timeout=20) as response:
-        result = json.load(response)
-    chats = {
-        update["message"]["chat"]["id"]
-        for update in result.get("result", [])
-        if update.get("message", {}).get("chat", {}).get("type") == "private"
-    }
-    print("Identifiant(s) de conversation privée :", sorted(chats))
-    if not chats:
-        print("Envoyer un nouveau message au bot, puis relancer.")
-except Exception:
-    print("Lecture impossible. Vérifier le jeton et la connexion sans les publier.")
-```
+### Test facultatif pour une nouvelle installation
 
-N'utiliser que son propre identifiant de conversation. En cas de divulgation du jeton, le révoquer auprès de BotFather et mettre à jour le secret.
-
-### Tester puis activer Telegram
-
-Les scans de prix n’exigent pas Telegram. Les notifications sont désactivées par défaut.
+Les scans de prix n’exigent pas Telegram. Les notifications sont désactivées par défaut pour une nouvelle installation ; elles sont déjà activées sur ce dépôt. **Ne lancer le test ci-dessous que sur demande explicite : il envoie un vrai message.** Il n’est pas nécessaire pour une reprise ou une vérification en lecture seule.
 
 Après avoir enregistré les deux secrets, ouvrir [Tester Telegram](https://github.com/werti4/uniqlo-alert/actions/workflows/test-telegram.yml), puis **Run workflow → main → Run workflow**. Ce lancement manuel vérifie le bot et la conversation privée, puis envoie un message explicitement marqué « test ». Il ne modifie ni les favoris, ni les prix, ni l’historique. Il ne nécessite pas la clé de chiffrement et fonctionne avant l’activation des alertes automatiques. Aucun jeton ou identifiant personnel n’est affiché dans les logs. Vérifier la réception du message et de la notification sur l’iPhone ; le succès de l’API seul ne prouve pas que les notifications iOS sont autorisées.
 
@@ -109,14 +86,14 @@ La couleur et la taille souhaitées restent indicatives. L'objectif de prix est 
 
 ## 6. Vérifier le fonctionnement réel
 
-Dans les réglages de l'extension, cliquer sur **Lancer un scan GitHub**, puis consulter l'exécution dans Actions et actualiser l'extension après sa fin.
+Attendre le prochain scan naturel Cloudflare à `:17`, consulter l’exécution dans Actions, puis actualiser l’extension. Une demande `/scan` depuis Telegram reste possible pour actualiser volontairement ; aucun scan manuel n’est nécessaire pour valider une reprise.
 
 - Une date de dernière lecture valide et un prix doivent apparaître sur chaque article lu.
 - Le premier relevé ne déclenche aucune alerte de baisse ; il sert de référence.
 - Une simple présence des secrets Telegram indique une configuration déclarée, pas une réception vérifiée sur l'iPhone.
 - La première baisse détectée doit apparaître dans **Mes alertes** avec son statut de livraison. L'obtention d'un message Telegram confirme alors la livraison ; la réception effective sur l'iPhone reste à constater sur l'appareil.
 
-Le scan planifié vise 5 minutes entre lancements, sans ponctualité garantie. La durée de lecture, les erreurs et les pauses peuvent allonger le délai réel par article.
+Cloudflare demande un scan par heure à la minute 17 (`17 * * * *`). Les anciens calendriers GitHub sont retirés. Démarrage Actions, durée de lecture, erreurs et pauses peuvent allonger le délai réel par article.
 
 ## Dépannage
 
@@ -130,40 +107,28 @@ Le scan planifié vise 5 minutes entre lancements, sans ponctualité garantie. L
 | Dernier prix ancien | Lire l'erreur par article et les dernières exécutions GitHub |
 | Alerte en attente | Bot démarré, jeton/chat_id corrects, secrets Telegram présents |
 | Alerte envoyée sans notification iPhone | Ouvrir Telegram, vérifier notifications, conversation en sourdine et Concentration |
-| Plus de lancement automatique | Vérifier l'activation du workflow et une éventuelle désactivation après 60 jours sans activité |
+| Plus de lancement automatique | Vérifier cron Cloudflare, `HOURLY_SCAN_ENABLED=true`, expiration du PAT Worker et derniers runs Actions ; ne pas rétablir un calendrier concurrent |
 
 Ne jamais copier les secrets dans une issue publique ou les logs. Le code ne contient aucun mécanisme de contournement des blocages UNIQLO.
 
-## Commande Telegram `/logs`
+## Utiliser les commandes Telegram
 
-Dans la conversation privée de votre bot, envoyer `/logs`. Le workflow **Commandes Telegram** est configuré pour consulter les messages toutes les cinq minutes demandées, à :04, :09, …, :59, avec les délais/omissions possibles de GitHub. Il utilise les secrets existants et `UA_TELEGRAM_ENABLED=true`. Aucun serveur permanent ni nouveau jeton nécessaire.
+Envoyer les commandes dans la conversation privée du bot. Cloudflare vérifie le propriétaire, conserve la commande, accuse réception puis déclenche automatiquement Actions. Les suffixes `/commande@NomDuBot` sont acceptés pour le bon bot. Aucun lancement manuel de workflow requis ; le résultat peut attendre un runner GitHub.
 
-La réponse présente un résumé diagnostique : dernière tentative et lecture valide reçue (heures de Paris), nombres de réussites/erreurs/différés du dernier état sauvegardé, statut d’erreur/pause et cinq dernières exécutions Actions avec liens. Les logs bruts se consultent sur GitHub. Les valeurs d’erreur libres, noms d’articles et identifiants sensibles ne sont pas recopiés. Les données sauvegardées peuvent être anciennes, même si un scan plus récent a eu lieu.
+| Commande | Utilisation |
+| --- | --- |
+| `/logs` | Diagnostic, dates du dernier état, erreurs/pauses et cinq derniers runs avec liens ; aucun scan |
+| `/scan` | Vérification des favoris actifs publiés, état puis promotions avec prix de référence et lien ; inclut les promos présentes dès l’ajout |
+| `/favoris` | Tous les favoris publiés, actifs ou pausés, derniers prix connus et dates, 🔴 promotion, ⚪ absence confirmée, ⚫ prix absent ; aucun scan |
 
-Seuls les messages de la conversation privée et de l’utilisateur correspondant à `TELEGRAM_CHAT_ID` sont autorisés. Le curseur de traitement est chiffré séparément dans `monitor-data:data/telegram-commands.enc.json` ; l’historique scanner reste intact. Ne pas faire tourner un autre lecteur `getUpdates` ou un webhook en parallèle. Au maximum trois réponses par passage ; en cas d’interruption après envoi et avant sauvegarde, une réponse peut exceptionnellement être répétée. Telegram ne conserve les messages à récupérer que pendant une durée limitée (24 h).
+`/scan` n’annonce aucune promotion seulement si la vérification est complète ; erreurs, articles différés ou prix de base manquant donnent un bilan incomplet explicite. Il respecte les pauses et ne contourne aucun blocage. Un seul scan par passage ; une demande consommée n’est pas rejouée automatiquement après une erreur d’envoi. Consulter `/logs` avant de renvoyer volontairement `/scan` après une interruption.
 
-**Cette commande ne lance aucun scan UNIQLO.** L’absence de lancements planifiés constatée sur le dépôt peut aussi empêcher une réponse automatique. Sa présence dans le code ne prouve pas une exécution réelle ; aucun lancement manuel n’est effectué par l’agent conformément à la demande utilisateur.
+`/favoris` ne voit pas les changements Chrome non publiés et ne rafraîchit pas les prix. Pour actualiser, utiliser `/scan`, attendre sa fin puis `/favoris`, en complément du scan automatique horaire.
 
-## Commande Telegram `/scan`
+Les workflows de commandes et de scanner partagent `uniqlo-monitor` pour protéger l’historique. Le curseur de commandes est chiffré séparément dans `monitor-data:data/telegram-commands.enc.json`. Ne pas faire tourner un lecteur getUpdates en parallèle du webhook. Un doublon de réponse reste possible après interruption entre envoi et sauvegarde.
 
-Envoyer `/scan` dans votre conversation privée avec le bot (ou `/scan@NomDuBot`). Au prochain passage du workflow **Commandes Telegram**, il répond « Scan en cours », exécute une vérification des **favoris actifs publiés**, puis envoie « Scan terminé » et les articles actuellement en promotion : nom, prix actuel, prix de base et lien. Les promotions déjà présentes au premier relevé sont incluses dans ce bilan demandé ; cela ne change pas la règle des alertes automatiques de baisse.
+## Maintenance Cloudflare et futures commandes
 
-« Aucun article en promo » est envoyé seulement si tous les favoris actifs ont été vérifiés pendant ce scan, avec une comparaison de prix valide. En cas de blocage, erreur, article différé ou prix de base absent, le résultat est explicitement incomplet. Les vieux prix ne sont pas présentés comme des promotions nouvellement vérifiées. Les pauses et robots.txt sont respectés : la commande ne contourne pas un blocage.
+[Guide Worker](../telegram-webhook/README.md) : emplacements des secrets/variables, diagnostic en lecture seule depuis iPhone, mises à jour et retour arrière. Aucun secret dans le chat. La configuration fonctionne déjà ; le diagnostic **Configurer Cloudflare sans scan** en `verify_only=true` ne demande ni vrai scan ni message de test.
 
-La commande n’est pas instantanée : elle dépend de la lecture différée des messages par Actions. Le problème de planification connu peut aussi bloquer cette lecture. Un seul scan par passage est autorisé ; une demande est enregistrée comme consommée avant le lancement afin de ne pas répéter un scan automatiquement si une réponse Telegram échoue. Si l’exécution est interrompue, consulter /logs et Actions avant de renvoyer volontairement /scan.
-
-Les workflows de commandes et de scanner partagent désormais le groupe de concurrence `uniqlo-monitor` pour protéger l’historique chiffré. Ne pas lancer un autre lecteur getUpdates. Aucun nouveau secret ni changement d’extension requis.
-
-## Réponse sans lancement manuel : mode webhook
-
-Voir [le guide de déploiement Cloudflare](../telegram-webhook/README.md). Le Worker et sa file SQLite sont **déployés**, les cinq secrets requis sont maintenant présents (noms/types vérifiés), accès et liaison Actions/webhook validés, premier scan horaire naturel confirmé. Voir [le relais Codex](CODEX_HANDOFF.md). Un compte Workers avec Durable Object SQLite et une configuration de secrets sont nécessaires. L’accusé de réception sera rapide après activation ; l’exécution du scan restera soumise aux délais GitHub Actions. Le Worker inclut aussi un calendrier horaire Cloudflare, à activer explicitement après déploiement selon le guide. L’ancien calendrier GitHub reste distinct tant que sa migration n’a pas été effectuée. Aucun jeton dans le chat.
-
-## Règle pour les commandes à venir
-
-Toutes les commandes Telegram doivent être intégrées à Cloudflare et au [catalogue partagé](../telegram-webhook/commands.json), selon [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md). Une nouvelle commande implique tests, documentation et redéploiement du Worker ; ne pas ajouter uniquement un script Python ou un bouton de lancement Actions. Le Worker Cloudflare est déployé ; consulter le contexte courant pour la liaison et les validations restantes.
-
-## Commande `/favoris`
-
-Afficher tous les favoris **publiés** sur GitHub, y compris ceux en pause, avec les derniers prix connus : 🔴 promotion au dernier relevé (prix inférieur au prix de base), ⚪ pas de promotion confirmée, ⚫ prix indisponible. La date du relevé et un avertissement pour les prix anciens/en erreur évitent de présenter un ancien prix comme actuel. La liste est découpée en plusieurs messages si nécessaire. Les favoris locaux non publiés ne sont pas accessibles au bot.
-
-La commande ne lance aucun scan. Pour demander une nouvelle vérification, utiliser /scan, attendre sa fin puis /favoris. Cela évite de multiplier les lectures UNIQLO à chaque consultation. Le surcoût d’un scan est surtout dans le runner GitHub et les requêtes UNIQLO, pas dans le récepteur Cloudflare. L’ajout au catalogue est publié ; le Worker est déployé, mais il faut terminer les accès et valider une réponse réelle avant d’annoncer la commande active.
+Toute commande future exige **catalogue partagé `commands.json` + routage Cloudflare + traitement + tests + documentation + déploiement Worker**. Une modification uniquement dans GitHub est incomplète. [Contrat complet](TELEGRAM_COMMANDS.md).

@@ -1,24 +1,14 @@
 # Contexte de référence — UNIQLO Alert
 
-## État courant — webhook et premier scan horaire naturel validés
+État consolidé le **29 octobre 2026, Europe/Paris**, depuis `main` après la migration `5fdd32a`. Ce fichier décrit les décisions et la configuration courantes. [CODEX_HANDOFF.md](CODEX_HANDOFF.md) donne la reprise courte, [VALIDATION.md](VALIDATION.md) les preuves datées et [HISTORY.md](HISTORY.md) les anciens états.
 
-Le **29 octobre 2026 à 13:15 Paris**, activation réussie avec les secrets corrigés : [workflow 40869512253](https://github.com/werti4/uniqlo-alert/actions/runs/40869512253), job 123439570029. Concordance des secrets/token/chat Actions et Worker, identité/username du bot, propriétaire privé, workflows actifs et PAT Actions write vérifiés. setWebhook/getWebhookInfo confirment /telegram, allowed_updates message, max_connections=1, sans suppression des updates. Deux commandes déjà en attente ont été livrées et les runs Commandes Telegram 40871565324 et 40871569061 ont réussi. Aucun message de test ni scan forcé par l’agent.
+## Situation actuelle
 
-**Premier déclenchement naturel prouvé à 13:17 Paris (12:17 UTC)** : [scanner 40872057387](https://github.com/werti4/uniqlo-alert/actions/runs/40872057387), créé à 12:17:34 UTC, toutes les étapes dont « Scanner les favoris » exécutées avec succès. [Diagnostic horaire 40872060775](https://github.com/werti4/uniqlo-alert/actions/runs/40872060775), job 123441351584 : VERIFY_ONLY=true, VERIFY_HOUR=498132, lastHourlyDispatch=498132, hourly_enabled=true, webhook_confirmed=true, pending_updates=0, last_error_date=null, queue_length=0. L’heure correspond au scheduled naturel et au dispatch mémorisé par le DO ; ce n’est pas un scan lancé pour tester.
+**Configuration Cloudflare/Telegram terminée.** Webhook confirmé, commandes traitées automatiquement par Actions, premier scan horaire naturel réussi à **13:17 Paris (12:17 UTC)**. Les deux anciens calendriers GitHub ont ensuite été retirés. L’utilisateur indique que tout semble bien fonctionner ; deux autres runs de commandes ont réussi à 13:28 et 13:34 Paris. Aucune saisie de secret ni activation restante identifiée.
 
-Après validation, **HOURLY_SCAN_ENABLED=true**, **HOURLY_VERIFY_ENABLED=false**, **SETUP_ENABLED=false** confirmés par API et maintenus dans wrangler.jsonc ; cron Cloudflare **17 * * * *** inchangé. Les anciens on.schedule de scan.yml et telegram-commands.yml sont retirés par cette publication pour éviter les doublons. workflow_dispatch, on.push des favoris, permissions et groupe uniqlo-monitor sont conservés. Publication avec **[skip actions]**, car modifier scan.yml déclencherait sinon un scan de push. Aucun workflow entier désactivé.
+Worker : **[uniqlo-telegram-webhook](https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev)**. Cron Cloudflare actif : `17 * * * *` (UTC ; minute 17 également à Paris). `HOURLY_SCAN_ENABLED=true`, `HOURLY_VERIFY_ENABLED=false`, `SETUP_ENABLED=false` dans le déploiement vérifié et les sources. Les anciens échecs de format du secret sont résolus : ne recréer ni Worker ni secrets.
 
-La vérification Automations créée pour 13:25 Paris a été **désactivée**, car le déclenchement naturel a été vérifié ici avant cette échéance. Aucune autre vérification persistante n’est annoncée. Le workflow dédié configure-cloudflare.yml reste disponible en lecture seule par défaut, sans déclencheur push ; /configure est fermé, /configuration-status exige le secret commun. Six noms de secrets (cinq requis + extra inutilisé), DO SQLite/bindings, favoris, clé AES et extension préservés.
-
-Limites : ce premier succès ne garantit ni tous les horaires suivants ni une collecte réussie de chaque article ; consulter les dates/erreurs par article. La réception sur l’iPhone d’une véritable future alerte de baisse reste distincte de l’acceptation par Telegram. Aucun abonnement modifié ; architecture compatible Free avec quotas documentés, mais Billing n’est pas lisible via OAuth. Les anciens échecs de format sont résolus : ne pas redemander de recréer les secrets.
-
-Mis à jour le **29 octobre 2026, Europe/Paris**. Ce document décrit l’état courant ; les anciens états sont dans [HISTORY.md](HISTORY.md). Le code et les vérifications datées priment sur les souvenirs de conversation. Une configuration personnelle peut évoluer : la revérifier avant toute conclusion.
-
-## Décision prioritaire — commandes Telegram dans Cloudflare
-
-**Toutes les commandes Telegram actuelles et futures passent obligatoirement par Cloudflare** pour réception, reconnaissance, autorisation et routage. Catalogue unique : `telegram-webhook/commands.json`, partagé avec l’exécutant. Lire [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md) avant toute nouvelle commande. Ne jamais ajouter une fonctionnalité uniquement au polling Python ou à un workflow manuel. Le traitement long d’un scan peut rester dans GitHub Actions, déclenché automatiquement par Cloudflare ; la réception et le résultat final ne sont pas la même garantie de délai.
-
-**Premier déploiement Cloudflare effectué le 29 octobre 2026 à 11:20 Paris. Le Worker et le Durable Object SQLite existent. Dernier contrôle API : les cinq secrets requis sont présents au bon type ; leurs valeurs et droits ne sont pas validés. Webhook confirmé et HOURLY_SCAN_ENABLED=true ; premier déclenchement horaire naturel validé (voir état courant). Reprise détaillée : [CODEX_HANDOFF.md](CODEX_HANDOFF.md).** Après chaque ajout de commande, mise à jour du catalogue + traitement + tests + documentation + redéploiement du Worker requis. Une publication GitHub seule ne suffit pas.
+Toutes les commandes Telegram actuelles et futures passent par Cloudflare. **Catalogue unique `telegram-webhook/commands.json` + routage Cloudflare + traitement + tests + documentation + déploiement Worker sont obligatoires.** Un commit GitHub ne déploie pas le Worker ; aucun pipeline de déploiement Cloudflare automatique n’est installé. Contrat : [TELEGRAM_COMMANDS.md](TELEGRAM_COMMANDS.md).
 
 ## Objectif et périmètre
 
@@ -35,18 +25,18 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 
 | Élément | Dernière preuve | Portée exacte |
 | --- | --- | --- |
-| Code publié | Extension **1.1.2**, changement fonctionnel `f9caa99` sur `main` | Le manifeste du dépôt fait foi ; la version installée chez l’utilisateur peut être différente |
+| Code publié | Extension **1.1.2** sur `main`, configuration horaire validée dans `5fdd32a` | Le manifeste du dépôt fait foi ; la version installée chez l’utilisateur peut être différente |
 | Installation Chrome | Capture utilisateur de 1.1.0 | Installation observée avec styles cassés ; rendu du correctif chez l’utilisateur non confirmé |
 | Correctif d’affichage | 1.1.1, commit `10daff5` ; test repris dans 1.1.2 | CSS compatible CSP, largeur 360 px, vérifiés sur pages simulées |
 | CI du code 1.1.2 | [40799781846](https://github.com/werti4/uniqlo-alert/actions/runs/40799781846), succès | Tests Python/JS, test navigateur, icônes et artefact |
 | Favoris publiés | `data/watchlist.enc.json` ajouté par `5c97080` sur `main` | Favoris chiffrés présents ; contenu personnel non déchiffré par l’agent |
-| Historique distant | Branche `monitor-data`, commit observé `5981a24`, fichier `data/state.enc.json` | État chiffré sauvegardé par le scanner |
-| Exécution scanner | [40801261438](https://github.com/werti4/uniqlo-alert/actions/runs/40801261438) : contrôle, installation et **Scanner les favoris exécutés avec succès** | Ce ne sont plus des étapes ignorées ; les compteurs de lectures n’ont pas pu être lus publiquement |
+| Historique distant | Branche `monitor-data`, fichier `data/state.enc.json` | État chiffré mis à jour par les scans ; ne pas figer sa révision ni le fusionner dans main |
+| Exécution scanner | [40872057387](https://github.com/werti4/uniqlo-alert/actions/runs/40872057387), premier déclenchement horaire naturel du 29/10/2026 à 13:17 Paris | Étape scanner réellement exécutée avec succès ; ne prouve pas une lecture complète de chaque article |
 | Prix réels dans Chrome | Non constatés par l’agent | Vérifier prix, date de lecture et erreurs par article après actualisation de l’extension |
 | Telegram / iPhone | Test [40804020828](https://github.com/werti4/uniqlo-alert/actions/runs/40804020828) réussi ; utilisateur confirme avoir reçu le message | Liaison et activation automatique confirmées ; scan 40804764809 réussi, livraison d’une véritable alerte de prix encore à constater |
 | Promotions du site actuel | Lecture directe bloquée par le réseau cloud lors du dernier essai | Offres temporaires, prix membres et dates restent à examiner sur des fiches réelles |
 
-**Ne plus annoncer « aucun favori publié » ou « scan ignoré » sur la base des anciennes exécutions.** Le premier workflow `40799781946` avait ignoré le scan ; l’exécution ultérieure ci-dessus l’a exécuté. À l’inverse, un workflow vert et une branche de données ne prouvent pas combien d’articles ont été lus ni la livraison d’une notification.
+Un workflow vert ne prouve pas une lecture complète de chaque article ni une notification reçue. Les anciens scans ignorés et blocages sont archivés dans [HISTORY.md](HISTORY.md), sans action de configuration à répéter.
 
 ## Architecture et circulation des données
 
@@ -83,60 +73,48 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 
 Aucune valeur de secret dans le dépôt, les logs, le paquet, les captures partagées ou le chat. Ne pas déduire l’absence d’une clé d’un refus de lecture de la liste des secrets. La présence de la configuration a permis l’exécution récente ; son état doit être revérifié si un nouveau problème apparaît.
 
-## Environnement de travail et accès
+## Configuration Cloudflare et Actions déployée
 
-- Checkout de cette tâche : `/workspace/scratch/6e97d4083c7f/uniqlo-alert`, Python 3.12.14, Node.js 24.22.1. Pas de dépendance npm d’exécution. Les chemins et dépendances de chaque environnement sont à revérifier.
-- HTTPS Git : fetch fonctionne ; push direct refusé faute d’identifiants dans ce cloud, `gh` non installé. Publication effectuée via le connecteur GitHub (tree/commit puis mise à jour de main avec SHA attendu), sans forcer ni écraser les favoris concurrents. Diagnostiquer les droits par opération.
-- Aucun contrôle du **Chrome personnel** de l’utilisateur disponible dans cette conversation. L’autorisation de l’utilisateur ne crée pas cette capacité. Ne pas prétendre lire sa clé ou agir dans sa session.
-- Le Chromium cloud interdit le chargement réel d’extensions décompressées par politique administrateur. Le test navigateur utilise des pages simulées avec la CSP exacte et les API Chrome simulées.
-- Le dernier accès direct à UNIQLO était bloqué par le proxy cloud (CONNECT 403), avant réponse du site. `www.uniqlo.com` a été ajouté au **brouillon** réseau ; sauvegarde/publication/application à revérifier. Cela concerne l’environnement cloud, pas le réseau des runners Actions.
-- Les processus ne survivent pas forcément à une nouvelle tâche. Aucun serveur permanent nécessaire au développement local.
-
-## Déploiement Cloudflare réellement observé — 29 octobre 2026
-
-| Élément | État vérifié |
+| Élément | Configuration validée le 29/10/2026 |
 | --- | --- |
-| Compte | `6f5af3971fa548918e6b51e78c26a4c1`, compte Cloudflare associé à werti4 |
-| Worker | `uniqlo-telegram-webhook` |
-| URL racine | https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev |
-| Version initiale | `5a4568a5-a171-4e64-8e1d-48fef52924f7`, 100 % du trafic, API Cloudflare |
-| Durable Object | binding `INBOX`, classe `TelegramInbox`, migration `v1`, **SQLite confirmé** |
-| Namespace | `84ca5eaff5764f178aa74c2854fd70be` |
-| Cron enregistré | `17 * * * *` (UTC, minute 17 également à Paris), propagation possible |
-| Dispatch horaire | **Activé**, `HOURLY_SCAN_ENABLED=true`, premier horaire naturel confirmé le 29/10 à 13:17 Paris |
-| Variables présentes | `GITHUB_REPOSITORY=werti4/uniqlo-alert`, `GITHUB_BRANCH=main` |
-| Secrets Worker | `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `BOT_USERNAME`, `GITHUB_DISPATCH_TOKEN` présents au type `secret_text` ; valeurs non lues, validité non confirmée |
-| Liaison Actions | Utilisateur indique avoir effectué la configuration guidée ; présence/valeurs actuelles de `UA_TELEGRAM_WEBHOOK_URL`, `UA_TELEGRAM_WEBHOOK_SECRET` et `UA_TELEGRAM_ENABLED` non vérifiables via le connecteur disponible |
-| Webhook Telegram | Enregistré et confirmé par getWebhookInfo, run 40869512253/job 123439570029 |
-| Accès HTTPS depuis ce cloud | Après propagation et User-Agent applicatif : GET / → 404 JSON ; POST /telegram et /pending sans secret → 403 JSON. Routage public et refus des requêtes non authentifiées confirmés, sans commande ni message |
+| Compte Cloudflare | `6f5af3971fa548918e6b51e78c26a4c1` |
+| Worker / URL | `uniqlo-telegram-webhook` / https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev |
+| Webhook Telegram | URL racine + `/telegram`, secret officiel, `allowed_updates=["message"]`, `max_connections=1`, updates conservées |
+| Durable Object | `INBOX` → `TelegramInbox`, SQLite, migration `v1`, namespace `84ca5eaff5764f178aa74c2854fd70be` |
+| Variables Worker | `GITHUB_REPOSITORY=werti4/uniqlo-alert`, `GITHUB_BRANCH=main`, `HOURLY_SCAN_ENABLED=true`, `HOURLY_VERIFY_ENABLED=false`, `SETUP_ENABLED=false` |
+| Secrets Worker requis | `WEBHOOK_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `BOT_USERNAME`, `GITHUB_DISPATCH_TOKEN` ; présents, contrôles d’identité/concordance et dispatch réussis sans lecture des valeurs |
+| Secret Worker supplémentaire | `UA_TELEGRAM_WEBHOOK_SECRET`, inutilisé ; laissé intact, distinct du nom attendu `WEBHOOK_SECRET` |
+| Variables Actions | `UA_TELEGRAM_WEBHOOK_URL` = URL racine sans `/telegram`, `UA_TELEGRAM_ENABLED=true` |
+| Secrets Actions | `UA_TELEGRAM_WEBHOOK_SECRET` = même valeur que `WEBHOOK_SECRET` ; `TELEGRAM_BOT_TOKEN` et `TELEGRAM_CHAT_ID` concordants ; `UA_ENCRYPTION_KEY` conservée |
+| Exécution Actions | `scan.yml` et `telegram-commands.yml` actifs par `workflow_dispatch`, sans `on.schedule` ; déclencheurs de publication de favoris conservés, groupe `uniqlo-monitor`, annulation désactivée |
+| Administration | `configure-cloudflare.yml` manuel, `verify_only=true` par défaut ; `/configure` fermé, `/configuration-status` authentifié et en lecture seule |
 
-Le connecteur a permis création du sous-domaine workers.dev, publication du module, migration SQLite, liaison, route workers.dev et cron. La consultation des abonnements est refusée (OAuth sans permission Billing). **Aucun abonnement n’a été créé ou modifié.** Le modèle API `standard` ne prouve pas à lui seul le palier Free ; vérifier Workers Free dans le tableau de bord avant activation. L’architecture est compatible avec Free, selon les quotas documentés dans le guide.
+La file durable conserve jusqu’à 20 commandes, en traite trois par passage (un scan maximum), déduplique les updates et retente un dispatch non vidé après dix minutes. Avec l’URL Actions renseignée, le lecteur utilise `/pending` et `/ack`, **jamais getUpdates en parallèle du webhook**. Les acquittements et résultats restent soumis aux limites des API ; une interruption juste après un envoi peut produire un doublon.
 
-Les secrets GitHub ne sont pas relisibles en clair et aucun outil connecté ne permet ici de créer un PAT personnel limité ni de gérer les variables/secrets Actions. Ne jamais récupérer d’anciens tokens dans les conversations. Saisies masquées et étapes exactes : [guide Cloudflare](../telegram-webhook/README.md). **UA_ENCRYPTION_KEY reste exclusivement dans Actions et Chrome ; ne jamais la transmettre au Worker.** Secrets Telegram existants et favoris conservés.
+Les valeurs secrètes n’ont pas été lues ni publiées. Le PAT Worker a réussi les accès et dispatchs nécessaires ; cela ne constitue pas une inspection exhaustive de tous ses droits. `UA_ENCRYPTION_KEY` reste exclusivement dans Chrome/Actions, jamais dans Cloudflare.
 
-Dernière preuve de scanner : 40872057387 et diagnostic horaire 40872060775, voir état courant. UA_TELEGRAM_ENABLED=true et liaison Actions/Worker ont été vérifiés par la procédure sécurisée.
+## Commandes disponibles
 
-## Vérifications de cette tâche et activation restante
+- `/logs` : diagnostic et cinq derniers runs du scanner, sans scan ni logs bruts personnels.
+- `/scan` : scan des favoris actifs publiés, progression puis promotions, y compris présentes dès l’ajout. Bilan incomplet explicite si erreurs, articles différés ou prix de référence manquant.
+- `/favoris` : tous les favoris publiés, actifs ou pausés, derniers prix datés, 🔴 promotion et prix de référence disponible ; prix absents/anciens et erreurs signalés. **Aucun scan** ; utiliser `/scan` pour actualiser.
 
-- 63 tests Python et 27 tests Node réussis, services simulés ; Wrangler 4.155.0 `deploy --dry-run` réussi, bundle environ 8,15 Kio. L’accusé Telegram est maintenant envoyé avant l’appel de dispatch GitHub ; une panne de dispatch conserve la commande et ne répète pas l’accusé déjà confirmé.
-- Script local : `--check` vérifie getWebhookInfo en lecture seule, erreurs masquées ; `/logs` distingue les dispatchs Cloudflare/manuels des schedules GitHub sans inventer leur origine.
-- HTTP : User-Agent Python par défaut refusé par Cloudflare 1010 ; en-tête `UniqloAlertBridge/1.0` ajouté au bridge Actions et au script local selon la documentation officielle. Routes publiques et contrôle d’accès vérifiés sans secret.
-- API : Worker déployé à 100 %, binding SQLite, migration, variables, cron et domaine vérifiés ; dernier contrôle API : cinq secrets requis présents, noms et types uniquement.
-- Aucun scan réel, aucun message de test Telegram, aucune lecture/déchiffrement de favoris, aucune modification d’extension ou de clé effectués.
-- Reste : observer les futures livraisons d’alertes réelles et les dates/erreurs par article ; vérifier le palier Free dans le tableau de bord si nécessaire, sans souscrire d’offre payante.
-- Webhook, accès et premier horaire naturel confirmés. Chaque prochain scan peut subir retards/erreurs ; aucun suivi en arrière-plan implicite.
-- **Migration des calendriers effectuée après validation** : seuls on.schedule de scan.yml et telegram-commands.yml retirés ; workflow_dispatch et publications de favoris conservés, commit [skip actions].
+Accusé rapide depuis Cloudflare, résultat après le délai du runner Actions. Aucune intervention manuelle dans Actions normalement nécessaire pour ces commandes.
 
-## Commandes et mises à jour obligatoires
+## Limites et points à observer
 
-- `/logs` : diagnostic et cinq derniers runs du scanner, lecture seule.
-- `/scan` : demande un scan des favoris actifs publiés, annonce le début puis le bilan ; promotions présentes dès l’ajout incluses. Résultat incomplet explicite si erreurs/différés/base absente.
-- `/favoris` : tous les favoris publiés, actifs et pausés, derniers prix datés, 🔴 promotion et prix de référence disponible ; prix manquants/anciens/erreurs signalés. **Aucun scan.** Utiliser `/scan` pour actualiser.
+Aucun blocage de configuration connu. Le succès horaire prouve le chemin Cloudflare → Actions et l’exécution du scanner ; il ne garantit ni les prochains horaires, ni chaque lecture UNIQLO, ni une future alerte de prix reçue sur l’iPhone. Consulter les dates/erreurs par article. La confirmation générale de l’utilisateur ne constitue pas un test séparé de chaque commande ou d’une baisse réelle.
 
-Une future commande exige **catalogue `commands.json` + routage Cloudflare + traitement + tests + documentation + déploiement du Worker**. Une commande uniquement ajoutée à GitHub est incomplète. Aucun pipeline automatique de déploiement Cloudflare n’est installé.
+Aucune offre payante souscrite. Architecture compatible avec Free et ses [quotas documentés](../telegram-webhook/README.md#quotas-gratuits-et-limites-réelles), sans service illimité. Le connecteur Cloudflare refuse la lecture Billing : le palier exact reste consultable dans le tableau de bord, sans modification d’abonnement. La vérification ponctuelle de 13:25 a été désactivée après validation naturelle ; aucun suivi en arrière-plan supplémentaire promis.
 
-Mise à jour : récupérer `origin/main` (publications Chrome possibles), conserver les données chiffrées et `monitor-data`, tester Python/Node et Wrangler dry-run, publier en fast-forward, déployer depuis les mêmes sources, conserver les secrets et la valeur réelle du switch horaire. Voir le guide pour les commandes détaillées.
+## Reprise, maintenance et retour arrière
 
-Retour arrière : désactiver le switch horaire, retirer le webhook sans supprimer les messages en attente, attendre la fin des lecteurs webhook, vider la variable Actions d’URL et rétablir un seul calendrier GitHub si nécessaire. Le code polling reste un fallback, jamais simultané au webhook. Ne pas supprimer le Durable Object ni sa file ; ne pas régénérer la clé des favoris.
+1. Lire AGENTS.md, ce contexte, [DEVELOPMENT.md](DEVELOPMENT.md), le contrat des commandes et le guide Worker. Récupérer la dernière `origin/main` avant publication : des changements Chrome peuvent arriver pendant la tâche. Ne pas forcer la branche.
+2. Préserver l’extension, la clé et les réglages, `main:data/watchlist.enc.json`, ainsi que l’historique et le curseur chiffrés sur `monitor-data`. Aucun déchiffrement nécessaire pour la maintenance documentaire.
+3. Pour un changement applicatif : tests Python/Node et contrôles ciblés, Wrangler dry-run si Worker ; publier et déployer les mêmes sources en conservant secrets, bindings SQLite et switches actifs. Documentation seule : cohérence, liens et `git diff --check`, sans relancer de scan.
+4. Vérification administrative depuis iPhone : workflow **Configurer Cloudflare sans scan**, `verify_only=true`. Cette lecture n’envoie ni message ni scan ; ne pas lancer le workflow de commandes pour tester. Les accès disponibles sont à revérifier dans chaque conversation, sans demander de secret dans le chat.
+5. Retour arrière : désactiver l’horaire dans les sources et le déploiement ; retirer le webhook sans supprimer les updates, attendre les lecteurs, vider l’URL Actions, puis rétablir un seul calendrier de repli si nécessaire. Conserver le DO et traiter sa file avant basculement, ne jamais régénérer la clé. Procédure : [guide Worker](../telegram-webhook/README.md#mise-à-jour-et-retour-arrière).
 
-Publication initiale `ac89367` : [CI 40857882653](https://github.com/werti4/uniqlo-alert/actions/runs/40857882653) entièrement réussie, tests Python/Node, popup CSP, icônes et paquet. Le correctif User-Agent ultérieur est couvert par les 63 tests Python locaux et une CI distincte.
+Git fetch HTTPS fonctionne dans l’environnement observé ; push direct sans identifiants et `gh` indisponible. Le connecteur GitHub permet publication tree/commit/update_ref avec SHA attendu, sans forcer. Il ne lit/gère pas les secrets/variables Actions ; la validation utilise les runtimes sécurisés. Le connecteur Cloudflare disponible pendant l’activation permet configuration/déploiement, sans accès Billing. Ne pas supposer ces capacités dans une autre conversation.
+
+Le Chrome personnel de l’utilisateur n’est pas contrôlable ici. Le test navigateur utilise le vrai HTML/CSP avec API simulées ; l’installation/rendu sur l’appareil reste une vérification distincte. Le dernier refus proxy cloud sur UNIQLO ne décrit pas le réseau des runners Actions.
