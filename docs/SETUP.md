@@ -87,6 +87,10 @@ except Exception:
 
 N'utiliser que son propre identifiant de conversation. En cas de divulgation du jeton, le révoquer auprès de BotFather et mettre à jour le secret.
 
+### Activer Telegram plus tard
+
+Les scans de prix n’exigent pas Telegram. Les notifications sont désactivées par défaut. Une fois le bot prêt et les deux secrets enregistrés, créer la **variable Actions** `UA_TELEGRAM_ENABLED` avec la valeur `true` dans les paramètres du dépôt → Secrets and variables → Actions → Variables. Sans cette activation explicite, le workflow ne transmet pas les identifiants Telegram au scanner et aucun message n’est envoyé.
+
 ## 5. Ajouter et publier les favoris
 
 Depuis une fiche UNIQLO France, cliquer sur l'extension : elle propose l'article ouvert. On peut aussi utiliser **Ajouter un article** avec le lien complet de la fiche.
@@ -104,7 +108,7 @@ Dans les réglages de l'extension, cliquer sur **Lancer un scan GitHub**, puis c
 - Une simple présence des secrets Telegram indique une configuration déclarée, pas une réception vérifiée sur l'iPhone.
 - La première baisse détectée doit apparaître dans **Mes alertes** avec son statut de livraison. L'obtention d'un message Telegram confirme alors la livraison ; la réception effective sur l'iPhone reste à constater sur l'appareil.
 
-Le scan planifié vise 15 minutes entre lancements, sans ponctualité garantie. La durée de lecture, les erreurs et les pauses peuvent allonger le délai réel par article.
+Le scan planifié vise 5 minutes entre lancements, sans ponctualité garantie. La durée de lecture, les erreurs et les pauses peuvent allonger le délai réel par article.
 
 ## Dépannage
 

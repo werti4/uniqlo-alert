@@ -49,17 +49,17 @@ function render() {
   const stale = !!lastSuccess && Date.now() - Date.parse(lastSuccess) > 45 * 60_000;
   const cooling = Date.parse(db.cloud.cooldownUntil) > Date.now();
   const running = ['in_progress', 'queued', 'waiting', 'requested'].includes(latest?.status);
-  const scanHint = cooling ? 'Surveillance temporairement suspendue' : running ? 'Nouvelle exécution GitHub en attente ou en cours' : stale ? 'Relevé ancien · consulter les exécutions' : stats?.deferred ? `${stats.succeeded || 0} réussis · ${stats.deferred} différés` : 'Planifié toutes les 15 min · retards possibles';
+  const scanHint = cooling ? 'Surveillance temporairement suspendue' : running ? 'Nouvelle exécution GitHub en attente ou en cours' : stale ? 'Relevé ancien · consulter les exécutions' : stats?.deferred ? `${stats.succeeded || 0} réussis · ${stats.deferred} différés` : 'Planifié toutes les 5 min · retards possibles';
   $('#statScan').innerHTML = `${escape(relative(lastSuccess))}<small>${escape(scanHint)}</small>`;
   const configured = !!db.settings.token && !!db.settings.key;
   const connected = configured && !!db.syncedAt;
   $('#cloudDot').className = connected ? 'ok' : configured ? 'warning' : '';
   $('#cloudLabel').textContent = connected ? 'GitHub synchronisé' : configured ? 'Connexion à vérifier' : 'À configurer';
-  const issue = db.cloud.scanError || db.cloud.notificationError || db.cloud.workflowError ||
+  const issue = db.cloud.scanError || (db.cloud.telegramConfigured ? db.cloud.notificationError : '') || db.cloud.workflowError ||
     (cooling ? `Prochaine tentative après ${new Date(db.cloud.cooldownUntil).toLocaleString('fr-FR')}.` : '') ||
     (latest?.conclusion === 'failure' ? 'La dernière exécution GitHub a échoué.' : '') ||
     (stale ? 'Les derniers prix reçus datent de plus de 45 minutes.' : '');
-  $('#connectionBanner').hidden = connected && !issue && !!lastSuccess && db.cloud.telegramConfigured;
+  $('#connectionBanner').hidden = connected && !issue && !!lastSuccess;
   if (!$('#connectionBanner').hidden) {
     $('#connectionBanner b').textContent = issue || (connected ? lastSuccess ? 'Les notifications Telegram restent à configurer.' : 'Aucun relevé réussi reçu pour le moment.' : configured ? 'Connexion enregistrée. Actualisez pour la vérifier.' : 'Votre veille commence ici.');
     $('#connectionBanner p').textContent = configured ? 'Consultez les réglages et les dernières exécutions GitHub. Une exécution réussie ne garantit pas un relevé de prix.' : 'Connectez le dépôt GitHub, puis ajoutez votre premier article.';

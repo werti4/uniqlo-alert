@@ -20,7 +20,7 @@ Le présent fichier synthétise les décisions. Ne pas confondre code écrit, co
 | Premier relevé | Référence initiale sans notification |
 | Objectif facultatif | Indication budgétaire ; ne supprime aucune alerte de baisse |
 | Exécution | GitHub Actions ; aucun scan automatique dans Chrome |
-| Fréquence initiale | 15 minutes visées, calendrier GitHub sans garantie de ponctualité |
+| Fréquence demandée | 5 minutes visées, calendrier GitHub sans garantie de ponctualité |
 | iPhone | Telegram : bot personnel et conversation démarrée par l'utilisateur |
 | Données distantes | AES-256-GCM ; favoris sur `main`, relevés sur `monitor-data` |
 | Secrets | Clé et Telegram dans GitHub Actions ; PAT limité au dépôt dans l'extension |
@@ -110,3 +110,11 @@ La capture de l’utilisateur confirme l’installation de 1.1.0 mais montre un 
 Correction : dimensions dans `quick-popup.css` externe, styles du Shadow DOM via feuille CSS construite, sans assouplir la CSP. Le paquet doit inclure ce nouveau fichier (13 fichiers). Test de régression navigateur `tools/check_quick_ui.cjs`, également ajouté à CI : véritable HTML du popup servi avec la CSP exacte du manifeste, API Chrome simulées, styles calculés, largeur 360 px, grille, couleurs, clics et absence de violations CSP vérifiés. Le cloud interdit toujours le chargement réel d’extensions ; la vérification de la nouvelle version installée reste à faire dans le Chrome de l’utilisateur.
 
 Publication 1.1.1 confirmée : commit `10daff5b0cf8f47be9b82947694e02625cd0e3e2` sur `main`. [CI #3 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40798538628), y compris le test navigateur sous CSP, génération des icônes et artefact `uniqlo-alert-extension` (29,9 Ko). Le nouveau test échoue sur une copie de 1.1.0 avec le blocage de styles attendu. Mise à jour installée à confirmer chez l’utilisateur.
+
+## Automatisation GitHub — 5 minutes, Telegram reporté
+
+L’utilisateur demande la configuration de l’automatisation. Le workflow `scan.yml` vise désormais un lancement aux minutes :02, :07, …, :57 (`2-57/5 * * * *`), sans garantie de temps réel. Les favoris publiés déclenchent également un scan ; le lancement manuel reste possible. Conservation de la sérialisation, des limites de durée, des pauses en cas de blocage et du stockage chiffré. Les notifications Telegram sont désactivées par défaut et nécessitent ultérieurement `UA_TELEGRAM_ENABLED=true` dans les variables Actions, en plus des deux secrets. La clé `UA_ENCRYPTION_KEY` et les favoris chiffrés restent les seuls prérequis personnels du scanner.
+
+Avant publication, aucun fichier `data/watchlist.enc.json` et aucune branche `monitor-data` n’étaient présents sur le dépôt distant. La lecture de la liste des secrets via l’API GitHub n’est pas accessible depuis cet environnement ; ne pas en déduire l’absence de clé. Ne pas demander de secret dans le chat ni générer une clé différente de celle du Chrome utilisateur. Étapes manuelles : copier la clé depuis l’extension vers le secret Actions, puis publier les favoris.
+
+Validation locale : quatre cas du contrôle de configuration (clé/fichier présents ou absents) réussis sans valeur sensible dans le résumé ; scripts Python embarqués compilés ; 27 tests Python et 19 tests JavaScript réussis. L’extension 1.1.2 affiche la nouvelle fréquence et ne présente plus Telegram comme bloquant lorsque les relevés sont réussis. Aucun relevé réel ni message Telegram confirmé à ce stade.
