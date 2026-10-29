@@ -6,8 +6,9 @@
   if (embedded) host.style.cssText = 'all:initial!important;position:fixed!important;bottom:20px!important;right:20px!important;z-index:2147483647!important;width:min(360px,calc(100vw - 24px))!important;display:block!important;';
   document.body.append(host);
   const root = host.attachShadow({mode: 'closed'});
-  root.innerHTML = `
-    <style>
+  // Constructable stylesheets work under the extension's strict style-src policy.
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(`
       :host{color-scheme:light}*{box-sizing:border-box}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #2670bf;outline-offset:3px}button:disabled{cursor:wait;opacity:.6}
       .panel{font:14px/1.5 system-ui,sans-serif;color:#252525;background:#fff;border:1px solid #e6e1df;border-radius:18px;box-shadow:0 8px 40px #0002;overflow:hidden;text-align:left}
       header{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #f0edeb}.mark{background:#e14343;color:white;border-radius:9px;font-size:20px;font-weight:800;padding:3px 9px}.brand{flex:1;font-weight:750}.brand small{display:block;font-size:11px;color:#777;font-weight:400}.close{border:0;background:transparent;font-size:23px;color:#777}
@@ -16,7 +17,11 @@
       ul{margin:0 0 12px;padding:0;list-style:none}li{display:flex;gap:10px;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid #f2efed}li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}li b{white-space:nowrap}
       .notice{font-size:12px;color:#776e68;background:#faf7f1;padding:9px;border-radius:8px;margin:0 0 10px}.message{font-size:12px;color:#526e4b;margin:8px 0;overflow-wrap:anywhere}.error{color:#b32c2c}.secondary{width:100%;padding:10px;border:1px solid #e6e1df;background:white;border-radius:9px;font-weight:600;color:#333}.links{display:flex;gap:12px;margin-top:10px}.links button{padding:0;background:none;border:0;font-size:12px;color:#76706d;text-decoration:underline}.launcher{font:600 14px system-ui,sans-serif;border:0;border-radius:30px;background:#df4646;color:white;padding:13px 18px;box-shadow:0 5px 22px #0003;float:right}[hidden]{display:none!important}
       @media(max-height:600px){.panel.floating{max-height:85vh;overflow:auto}}
-    </style>
+
+  `);
+  root.adoptedStyleSheets = [sheet];
+  root.innerHTML = `
+
     <section class="panel" aria-label="UNIQLO Alert"><header><span class="mark" aria-hidden="true">U↓</span><div class="brand">UNIQLO Alert<small>Vos envies, au bon prix</small></div><button class="close" aria-label="Réduire la fenêtre" title="Réduire">−</button></header>
     <div class="body"><h2>Vos favoris à portée de clic</h2><p class="muted" id="productInfo">Chargement…</p><button class="primary" id="toggle" disabled>Chargement…</button>
     <div class="stats"><button data-view="favorites"><b id="count">0</b>Favoris</button><button data-view="favorites" data-filter="drop"><b id="drops">0</b>En baisse</button><button data-view="alerts"><b id="alerts">0</b>Alertes</button></div>

@@ -43,3 +43,9 @@ La vérification visuelle dans Chrome n'a pas été réalisée : les navigateurs
 - ZIP local 1.1.0 : 12 fichiers autorisés, archive intègre sans chiffrement ni ZIP imbriqué. Le workflow prépare désormais un artefact avec ces fichiers directement. Aucune exécution distante de cette nouvelle version n’est confirmée.
 
 Publication 1.1.0 confirmée sur `main` le 29 octobre 2026 : commit `c35ff9eb71abecd1cd1d42826c3c0ed39eabb18e`. Le workflow [Vérifier le projet #2](https://github.com/werti4/uniqlo-alert/actions/runs/40797629957) a terminé avec succès et produit l’artefact `uniqlo-alert-extension` (29,6 Ko). La nouvelle archive contient directement les fichiers de l’extension. Installation dans le Chrome de l’utilisateur toujours à confirmer ; aucun scan réel ni Telegram vérifié dans cette étape.
+
+## Correctif 1.1.1
+
+La présentation 1.1.0 installée dans Chrome était cassée par le blocage du CSS inline sous `style-src 'self'`. Les captures simulées précédentes ne reproduisaient pas cette politique. Le correctif ne modifie pas la CSP : CSS externe pour les dimensions et feuille construite pour le Shadow DOM.
+
+Validation locale : 27 tests Python, 19 tests JavaScript et test navigateur `tools/check_quick_ui.cjs` réussis. Ce dernier utilise le véritable HTML du popup et la CSP du manifeste : largeur 360 px, grille et couleurs appliquées, ajout/retrait et réduction/réouverture fonctionnels, aucune violation CSP. Les API Chrome sont simulées ; le test n’effectue aucune requête réelle UNIQLO/GitHub. Exécution avec Playwright 1.62.1 et Chromium disponible ; `PLAYWRIGHT_MODULE` et `CHROMIUM_EXECUTABLE` permettent de choisir les outils préinstallés. Les captures sont écrites dans `test-results/quick-ui/`. Le workflow CI installe Playwright et exécute aussi ce contrôle avant de produire le paquet.

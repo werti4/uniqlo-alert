@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "UNIQLO Alert · Mes favoris",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Vos favoris UNIQLO France, leurs prix et votre surveillance GitHub Actions. Notifications sur iPhone via Telegram.",
   "permissions": [
     "storage",

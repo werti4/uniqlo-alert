@@ -13,7 +13,7 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -29,6 +29,12 @@ jobs:
       - run: python -m pip install -r requirements.txt
       - run: python -m unittest discover -s tests -p 'test_*.py'
       - run: npm test
+      - name: Vérifier le popup sous sa politique de sécurité réelle
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/quick-ui" --no-package-lock --no-save playwright@1.62.1
+          "$RUNNER_TEMP/quick-ui/node_modules/.bin/playwright" install --with-deps chromium
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/quick-ui/node_modules/playwright" node tools/check_quick_ui.cjs
       - name: Générer les icônes incluses dans les sources
         run: python tools/generate_icons.py
       - name: Préparer l’extension installable sans données privées
@@ -40,7 +46,7 @@ jobs:
           root = Path('extension')
           allowed = [
               'manifest.json', 'app.html', 'app.css', 'app.js', 'core.js', 'background.js',
-              'quick.html', 'quick.js',
+              'quick.html', 'quick.js', 'quick-popup.css',
               'icons/icon16.png', 'icons/icon32.png', 'icons/icon48.png', 'icons/icon128.png',
           ]
           with ZipFile('uniqlo-alert-extension.zip', 'w', ZIP_DEFLATED) as archive:
@@ -64,6 +70,7 @@ jobs:
             extension/background.js
             extension/quick.html
             extension/quick.js
+            extension/quick-popup.css
             extension/icons/icon16.png
             extension/icons/icon32.png
             extension/icons/icon48.png

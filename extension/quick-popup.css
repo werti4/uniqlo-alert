@@ -1,0 +1,8 @@
+/* Explicit dimensions avoid Chrome shrinking the toolbar popup to its min-content width. */
+html, body {
+  margin: 0;
+  width: 360px;
+  min-width: 360px;
+  background: #fff;
+}
+body > div { display: block; width: 360px; }
