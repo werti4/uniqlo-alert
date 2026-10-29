@@ -22,7 +22,7 @@ Le défaut visuel signalé sur 1.1.0 est corrigé dans le code depuis 1.1.1. Il 
 - Depuis, `main` a reçu les favoris chiffrés dans le commit `5c97080` ; `monitor-data` contient un état chiffré au commit observé `5981a24`.
 - [Exécution 40801261438](https://github.com/werti4/uniqlo-alert/actions/runs/40801261438) : contrôle de configuration, installation, étape **Scanner les favoris** et résumé tous **exécutés avec succès**. Observation effectuée pendant la consolidation du contexte.
 - Les compteurs de lectures n’ont pas été accessibles depuis les logs publics consultés. L’état personnel n’a pas été déchiffré par l’agent. Une liste vide ou des favoris en pause ne peuvent pas être exclus à partir de la seule réussite du job.
-- Confirmation fonctionnelle restante : dans Chrome, actualiser GitHub et constater au moins un prix valide avec une date récente, puis vérifier les erreurs par article. Telegram est reporté ; aucun envoi ni réception iPhone confirmés.
+- Confirmation fonctionnelle restante : dans Chrome, actualiser GitHub et constater au moins un prix valide avec une date récente, puis vérifier les erreurs par article. La réception du test Telegram est désormais confirmée (voir ci-dessous) ; la livraison automatique d’une alerte de prix reste distincte.
 
 Le calendrier est `2-57/5 * * * *`, sans ponctualité garantie. L’existence de ce calendrier ne démontre pas que chaque lancement planifié a eu lieu. Consulter les exécutions récentes lors du diagnostic.
 
@@ -36,10 +36,10 @@ La dernière tentative de consultation directe de robots.txt a reçu un CONNECT 
 
 Suivre [DEVELOPMENT.md](DEVELOPMENT.md). Consigner le commit testé, les commandes, les résultats, les vérifications réelles/simulées et les étapes non exécutées. Après un changement uniquement documentaire, contrôler les liens et le diff ; ne pas inventer de nouvelle validation applicative.
 
-## Préparation de Telegram
+## Test réel Telegram confirmé
 
-La configuration Telegram est désormais demandée ; l’utilisateur indique ne pas encore avoir créé son bot. Nouveau diagnostic manuel **Tester Telegram** : vérification du bot, vérification de la conversation privée, envoi d’un message explicitement marqué test. Aucune modification du scanner ou de l’état chiffré.
+Le workflow manuel **Tester Telegram** a été publié au commit `3389583` ; [CI 40802430270 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40802430270), avec 32 tests Python et 19 tests JavaScript. Les cinq nouveaux tests Python simulent les API et couvrent envoi confirmé, secrets manquants, refus des groupes/mauvaise identité, confidentialité des erreurs et confirmation incomplète.
 
-Validation locale : **32 tests Python**, dont 5 nouveaux couvrant envoi confirmé, secrets manquants, refus des groupes/mauvaise identité, confidentialité des erreurs et confirmation incomplète ; **19 tests JavaScript** réussis. API Telegram simulée, aucun envoi réel. La réception iPhone et l’activation des alertes automatiques restent à effectuer après création du bot et enregistrement des secrets.
+Depuis, le bot a été créé et les secrets enregistrés. [Test réel 40804020828](https://github.com/werti4/uniqlo-alert/actions/runs/40804020828) terminé avec succès ; le 29 octobre 2026, l’utilisateur confirme avoir reçu le message « UNIQLO Alert — message de test ». Liaison GitHub Actions → conversation privée Telegram vérifiée, sans accès aux favoris ni modification de l’historique.
 
-Diagnostic publié au commit `3389583`, [CI 40802430270 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40802430270). Aucun test réel Telegram exécuté : bot non encore créé selon la dernière réponse utilisateur.
+Reste à confirmer : variable Actions `UA_TELEGRAM_ENABLED=true`, scan avec Telegram activé, puis livraison d’une véritable alerte de baisse (ou d’une alerte déjà en attente). La réussite du test ne prouve pas que cette activation automatique a été enregistrée. Aucun secret ni identifiant personnel consigné dans ce document.
