@@ -42,7 +42,7 @@ Ouvrir les [secrets Actions du dépôt](https://github.com/werti4/uniqlo-alert/s
 
 La clé doit être identique des deux côtés. Ne pas la remplacer après publication des favoris : une clé différente ne peut pas lire les anciens relevés. Elle est également nécessaire pour configurer un deuxième appareil.
 
-## 4. Configurer Telegram sur iPhone (facultatif, plus tard)
+## 4. Configurer Telegram sur iPhone (facultatif pour les relevés)
 
 Pour démarrer les relevés sans Telegram, passez directement à l’étape 5.
 
@@ -89,7 +89,13 @@ except Exception:
 
 N'utiliser que son propre identifiant de conversation. En cas de divulgation du jeton, le révoquer auprès de BotFather et mettre à jour le secret.
 
-### Activer Telegram plus tard
+### Tester puis activer Telegram
+
+Les scans de prix n’exigent pas Telegram. Les notifications sont désactivées par défaut.
+
+Après avoir enregistré les deux secrets, ouvrir [Tester Telegram](https://github.com/werti4/uniqlo-alert/actions/workflows/test-telegram.yml), puis **Run workflow → main → Run workflow**. Ce lancement manuel vérifie le bot et la conversation privée, puis envoie un message explicitement marqué « test ». Il ne modifie ni les favoris, ni les prix, ni l’historique. Il ne nécessite pas la clé de chiffrement et fonctionne avant l’activation des alertes automatiques. Aucun jeton ou identifiant personnel n’est affiché dans les logs. Vérifier la réception du message et de la notification sur l’iPhone ; le succès de l’API seul ne prouve pas que les notifications iOS sont autorisées.
+
+Lors de l’activation automatique, les alertes encore en attente dans l’état chiffré peuvent être livrées au prochain scan : ce ne sont pas forcément des baisses survenues à l’instant.
 
 Les scans de prix n’exigent pas Telegram. Les notifications sont désactivées par défaut. Une fois le bot prêt et les deux secrets enregistrés, créer la **variable Actions** `UA_TELEGRAM_ENABLED` avec la valeur `true` dans les paramètres du dépôt → Secrets and variables → Actions → Variables. Sans cette activation explicite, le workflow ne transmet pas les identifiants Telegram au scanner et aucun message n’est envoyé.
 

@@ -12,6 +12,7 @@ Lire d’abord [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), puis l’état Git et l
 | URLs, prix affichés, validation, chiffrement JS | `extension/core.js` | Tests JS + tests d’interopérabilité Python |
 | Lecture UNIQLO, prix, historique, pauses, Telegram | `scanner/monitor.py` | Tests Python + interopérabilité si format modifié ; une lecture réelle autorisée reste une validation distincte |
 | Fréquence, secrets Actions, permissions, déclencheurs | `.github/workflows/scan.yml` | Scripts Python embarqués et prérequis ; vérifier les étapes réellement exécutées et les résultats du scan |
+| Diagnostic Telegram sans scan de prix | `.github/workflows/test-telegram.yml`, `tools/telegram_check.py`, `tests/test_telegram_check.py` | Test manuel uniquement, conversation privée et absence de secrets dans les erreurs |
 | Tests, génération et paquet téléchargeable | `.github/workflows/check.yml`, `tools/` | CI complète et contenu de l’artefact |
 | Permissions, injection sur UNIQLO, version | `extension/manifest.json` | Périmètre minimal, CSP préservée et test navigateur |
 

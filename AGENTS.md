@@ -6,7 +6,7 @@ Le code et les résultats vérifiés priment sur un ancien message de conversati
 
 - Outil personnel gratuit : extension Chrome Manifest V3, UNIQLO France, EUR.
 - L'extension gère les favoris. Tous les scans automatiques tournent sur GitHub Actions.
-- Chaque baisse depuis le dernier prix valide crée une alerte ; sa livraison Telegram nécessite une activation explicite. Telegram est reporté par l’utilisateur et ne bloque pas les relevés. L’objectif facultatif ne filtre aucune baisse.
+- Chaque baisse depuis le dernier prix valide crée une alerte ; sa livraison Telegram nécessite une activation explicite. La configuration Telegram est désormais demandée par l’utilisateur ; tant que sa réception réelle n’est pas vérifiée, ne pas annoncer les notifications opérationnelles. Telegram ne bloque pas les relevés. L’objectif facultatif ne filtre aucune baisse.
 - Le premier relevé constitue la référence et ne déclenche pas d'alerte.
 - Couleur et taille sont des préférences. Ne pas promettre de stock ni de prix précis par variante sans source vérifiée.
 - En cas de page invalide, blocage ou erreur réseau : conserver le prix valide, afficher l'erreur et ralentir. Aucun contournement des protections.

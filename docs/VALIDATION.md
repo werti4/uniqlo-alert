@@ -35,3 +35,9 @@ La dernière tentative de consultation directe de robots.txt a reçu un CONNECT 
 ## Pour les prochaines modifications
 
 Suivre [DEVELOPMENT.md](DEVELOPMENT.md). Consigner le commit testé, les commandes, les résultats, les vérifications réelles/simulées et les étapes non exécutées. Après un changement uniquement documentaire, contrôler les liens et le diff ; ne pas inventer de nouvelle validation applicative.
+
+## Préparation de Telegram
+
+La configuration Telegram est désormais demandée ; l’utilisateur indique ne pas encore avoir créé son bot. Nouveau diagnostic manuel **Tester Telegram** : vérification du bot, vérification de la conversation privée, envoi d’un message explicitement marqué test. Aucune modification du scanner ou de l’état chiffré.
+
+Validation locale : **32 tests Python**, dont 5 nouveaux couvrant envoi confirmé, secrets manquants, refus des groupes/mauvaise identité, confidentialité des erreurs et confirmation incomplète ; **19 tests JavaScript** réussis. API Telegram simulée, aucun envoi réel. La réception iPhone et l’activation des alertes automatiques restent à effectuer après création du bot et enregistrement des secrets.

@@ -10,7 +10,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 - Ajout/retrait en un clic de l’article ouvert, sur une fiche France ; aperçu favoris/baisses/alertes et accès au tableau de bord complet.
 - 50 favoris maximum. Les changements sont locaux jusqu’à **Publier les favoris**. Pas de publication automatique implicite.
 - GitHub Actions demande un scan toutes les **5 minutes** (`2-57/5 * * * *`), ainsi qu’après publication des favoris. Retards et omissions possibles ; aucun temps réel garanti.
-- **Telegram est reporté par choix utilisateur**, facultatif et désactivé par défaut. Ne pas le demander comme préalable aux relevés.
+- **Configuration Telegram demandée par l’utilisateur**, en cours ; notifications toujours facultatives et désactivées tant que l’activation n’est pas effectuée. Ne pas les demander comme préalable aux relevés.
 - Hors périmètre actuel : tout le catalogue, achat automatique, connexion UNIQLO, hébergement payant, contournement de protections, autres projets personnels.
 
 ## État vérifié et limites
@@ -25,7 +25,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 | Historique distant | Branche `monitor-data`, commit observé `5981a24`, fichier `data/state.enc.json` | État chiffré sauvegardé par le scanner |
 | Exécution scanner | [40801261438](https://github.com/werti4/uniqlo-alert/actions/runs/40801261438) : contrôle, installation et **Scanner les favoris exécutés avec succès** | Ce ne sont plus des étapes ignorées ; les compteurs de lectures n’ont pas pu être lus publiquement |
 | Prix réels dans Chrome | Non constatés par l’agent | Vérifier prix, date de lecture et erreurs par article après actualisation de l’extension |
-| Telegram / iPhone | Non vérifiés, activation reportée | Aucun envoi ni réception confirmés |
+| Telegram / iPhone | Configuration maintenant demandée ; bot pas encore créé selon la réponse utilisateur | Aucun envoi ni réception confirmés ; test manuel prêt à être configuré |
 | Promotions du site actuel | Lecture directe bloquée par le réseau cloud lors du dernier essai | Offres temporaires, prix membres et dates restent à examiner sur des fiches réelles |
 
 **Ne plus annoncer « aucun favori publié » ou « scan ignoré » sur la base des anciennes exécutions.** Le premier workflow `40799781946` avait ignoré le scan ; l’exécution ultérieure ci-dessus l’a exécuté. À l’inverse, un workflow vert et une branche de données ne prouvent pas combien d’articles ont été lus ni la livraison d’une notification.
@@ -37,7 +37,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 3. **Actions** : `scan.yml` transmet la clé Actions et le `GITHUB_TOKEN` automatique à `scanner/monitor.py`. Aucun PAT de l’utilisateur nécessaire dans Actions.
 4. **Scanner** : déchiffre, lit les fiches autorisées progressivement, conserve les prix valides et écrit l’état chiffré dans `monitor-data:data/state.enc.json`.
 5. **Actualisation Chrome** : lit/déchiffre les relevés GitHub. Le rafraîchissement local de la petite fenêtre ne lance pas de scan UNIQLO et ne remplace pas une synchronisation GitHub.
-6. **Telegram, plus tard** : file persistée avant envoi, réessais bornés ; activation explicite requise.
+6. **Telegram, après configuration** : file persistée avant envoi, réessais bornés ; activation explicite requise.
 
 `main` contient le code et la liste chiffrée. `monitor-data` contient les relevés ; ne pas remplacer son historique par une branche de développement ou fusionner ses snapshots dans `main`.
 
@@ -79,6 +79,12 @@ Aucune valeur de secret dans le dépôt, les logs, le paquet, les captures parta
 2. Pour valider le fonctionnement personnel : actualiser les données GitHub dans l’extension, vérifier au moins un prix valide, sa date et les erreurs éventuelles. Relever les compteurs du scan si disponibles, sans afficher les favoris en clair.
 3. Confirmer le rendu corrigé dans le Chrome utilisateur ; ne pas lui faire recréer un jeton ou une clé si la connexion fonctionne déjà.
 4. Examiner les mentions réelles de promotion lorsque l’accès le permet. Les cas synthétiques actuels ne valident pas les offres membres/temporaires.
-5. Telegram reste en attente d’une demande ultérieure.
+5. Accompagner maintenant la création du bot dans @BotFather, l’enregistrement des deux secrets, le test manuel **Tester Telegram**, puis l’activation `UA_TELEGRAM_ENABLED=true` après réception vérifiée. Ne pas demander de jeton dans le chat.
 
 Guides complémentaires : [installation et configuration](SETUP.md), [preuves et limites de validation](VALIDATION.md), [historique archivé](HISTORY.md).
+
+## Test de liaison Telegram
+
+L’utilisateur confirme ne pas encore avoir créé de bot. Le workflow manuel `.github/workflows/test-telegram.yml` vérifie getMe et getChat privé, puis envoie un seul message de test via `tools/telegram_check.py`. Aucune lecture de favori, aucune clé de chiffrement, aucune modification d’historique ; aucune exécution automatique au push ou sur calendrier. Les erreurs ne divulguent ni URL contenant le jeton, ni réponse API personnelle. Test possible avant l’activation des alertes normales. L’activation normale pourra ensuite livrer les anciennes alertes encore en attente.
+
+Validation locale de cette préparation : 32 tests Python (dont 5 nouveaux tests du diagnostic) et 19 tests JavaScript réussis. Réseau Telegram simulé pour les tests ; aucun message réel envoyé. Étapes personnelles indispensables : création du bot avec @BotFather, Démarrer dans sa conversation, secrets Actions TELEGRAM_BOT_TOKEN et TELEGRAM_CHAT_ID, lancement manuel du test, réception sur iPhone, puis variable Actions UA_TELEGRAM_ENABLED=true. Ne pas recréer la clé de chiffrement ni le jeton GitHub existants.
