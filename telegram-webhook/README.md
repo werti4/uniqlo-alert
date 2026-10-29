@@ -1,5 +1,13 @@
 # Telegram via Cloudflare — Worker déployé, activation des accès restante
 
+## Dernier contrôle après capture GitHub — 29 octobre 2026, 13:08 Paris
+
+La capture utilisateur confirme la bonne entrée Repository secret UA_TELEGRAM_WEBHOOK_SECRET, récemment modifiée. Relance du workflow dédié 40869512253, job 123437025540 : **trop court (moins de 32 caractères)**. Cette nouvelle catégorie remplace le précédent diagnostic de caractères interdits : la saisie a changé, mais ne satisfait pas encore le minimum. Aucun contenu ni longueur exacte du secret affiché. Contrôle interrompu avant HTTP Worker/Telegram, aucun setWebhook, scan ou message de test.
+
+Intervention restante : dans GitHub, crayon de UA_TELEGRAM_WEBHOOK_SECRET, coller le code aléatoire lui-même de 64 lettres/chiffres (pas le nom du secret), Update secret. Cloudflare WEBHOOK_SECRET doit contenir exactement le même code. Ne pas modifier la clé AES ni les jetons Telegram pour cette correction. Aucun secret dans le chat. Ne plus relancer avant une nouvelle correction.
+
+SETUP_ENABLED refermé à false après l’essai ; HOURLY_SCAN_ENABLED=false et HOURLY_VERIFY_ENABLED=false restent inchangés. Calendriers GitHub conservés, aucune vérification horaire naturelle programmée tant que l’activation n’a pas réussi. Les diagnostics plus bas sont historiques ; ce paragraphe est l’état le plus récent. Aucun changement applicatif pendant ce contrôle, mise à jour documentaire uniquement.
+
 ## Dernier contrôle après « C’est corrigé » — 29 octobre 2026, 12:58 Paris
 
 La relance de 40867953571 a encore trouvé un format invalide. Pour écarter un ancien état de run, une exécution **neuve** [40869512253](https://github.com/werti4/uniqlo-alert/actions/runs/40869512253), code `197bbcb`, a été lancée avec un diagnostic limité à des catégories, sans afficher longueur, contenu ou caractère du secret. Résultat exact : **secret Actions UA_TELEGRAM_WEBHOOK_SECRET : caractères non autorisés**. Le contrôle est arrêté avant tout appel HTTP Worker/Telegram, setWebhook non exécuté. Ne plus relancer tant que cette saisie n’est pas corrigée dans GitHub ; ne pas assouplir le format pour contourner le problème.
