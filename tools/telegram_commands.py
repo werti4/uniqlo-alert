@@ -1,4 +1,4 @@
-"""Private /logs diagnostics. Never scan products or modify scanner snapshots."""
+"""Private /logs diagnostics and explicitly requested /scan."""
 import base64
 import datetime as dt
 import json
@@ -67,7 +67,10 @@ def diagnostics(state, runs, repo, *, state_ok=True, runs_ok=True):
     ]
     if not state_ok:
         lines.append('⚠️ État chiffré non accessible : compteurs et dates indisponibles.')
-    lines += ['', 'Dernières exécutions GitHub :']
+    run_url = state.get('runUrl', '')
+    if isinstance(run_url, str) and re.fullmatch(re.escape(f'https://github.com/{repo}/actions/runs/') + r'\d+', run_url):
+        lines.append('Exécution du dernier état : ' + run_url)
+    lines += ['', 'Dernières exécutions du workflow Scanner UNIQLO :']
     events = {'schedule': 'planifié', 'push': 'commit', 'workflow_dispatch': 'manuel'}
     statuses = {'success': 'réussi', 'failure': 'échec', 'cancelled': 'annulé', 'skipped': 'ignoré', 'timed_out': 'délai dépassé'}
     for run in runs[:5]:
@@ -114,9 +117,10 @@ class CommandStore:
         self.sha = record['content']['sha']
 
 
-def process(updates, chat_id, username, cursor, report, send, save):
+def process(updates, chat_id, username, cursor, report, send, save, scan=None):
     replies = 0
     persisted = cursor
+    scanned = False
     for update in updates:
         uid = update.get('update_id')
         if type(uid) is not int or uid < 0 or (cursor is not None and uid <= cursor):
@@ -128,13 +132,27 @@ def process(updates, chat_id, username, cursor, report, send, save):
                       and str(sender.get('id')) == chat_id and not sender.get('is_bot'))
         text = message.get('text') or ''
         command = text.split()[0] if isinstance(text, str) and text.split() else ''
-        if authorized and command.lower() in ('/logs', '/logs@' + username.lower()):
+        command = command.lower()
+        is_logs = command in ('/logs', '/logs@' + username.lower())
+        is_scan = command in ('/scan', '/scan@' + username.lower()) and scan is not None
+        if authorized and (is_logs or is_scan):
             if replies >= MAX_REPLIES:
                 break
-            send(report())  # Save only after Telegram confirms delivery; retry failures next run.
+            if is_scan:
+                # Consume the request BEFORE scanning: a failed reply must never replay a scan.
+                save(uid)
+                persisted = uid
+                if scanned:
+                    send('Un scan a déjà été effectué pendant ce passage. Consultez les résultats ci-dessus.')
+                else:
+                    send('🔎 Scan en cours de vos favoris publiés…')
+                    scanned = True
+                    scan()
+            else:
+                send(report())
+                save(uid)
+                persisted = uid
             replies += 1
-            save(uid)
-            persisted = uid
         cursor = uid
     if cursor is not None and cursor != persisted:
         save(cursor)
@@ -178,8 +196,12 @@ def run():
         result = telegram(token, 'sendMessage', {'chat_id': chat_id, 'text': text, 'link_preview_options': {'is_disabled': True}})
         if type(result.get('message_id')) is not int or str(result.get('chat', {}).get('id')) != chat_id:
             raise RuntimeError('Livraison de la réponse non confirmée.')
-    count = process(updates, chat_id, bot['username'], cursor, report, send, store.save)
-    print(f'Commandes Telegram traitées : {count} réponse(s). Aucun scan UNIQLO lancé.')
+    def scan():
+        from tools.telegram_scan import execute
+        cache.clear()
+        execute(send)
+    count = process(updates, chat_id, bot['username'], cursor, report, send, store.save, scan=scan)
+    print(f'Commandes Telegram traitées : {count} commande(s). Scans uniquement sur demande /scan autorisée.')
 
 
 if __name__ == '__main__':

@@ -143,3 +143,13 @@ La réponse présente un résumé diagnostique : dernière tentative et lecture 
 Seuls les messages de la conversation privée et de l’utilisateur correspondant à `TELEGRAM_CHAT_ID` sont autorisés. Le curseur de traitement est chiffré séparément dans `monitor-data:data/telegram-commands.enc.json` ; l’historique scanner reste intact. Ne pas faire tourner un autre lecteur `getUpdates` ou un webhook en parallèle. Au maximum trois réponses par passage ; en cas d’interruption après envoi et avant sauvegarde, une réponse peut exceptionnellement être répétée. Telegram ne conserve les messages à récupérer que pendant une durée limitée (24 h).
 
 **Cette commande ne lance aucun scan UNIQLO.** L’absence de lancements planifiés constatée sur le dépôt peut aussi empêcher une réponse automatique. Sa présence dans le code ne prouve pas une exécution réelle ; aucun lancement manuel n’est effectué par l’agent conformément à la demande utilisateur.
+
+## Commande Telegram `/scan`
+
+Envoyer `/scan` dans votre conversation privée avec le bot (ou `/scan@NomDuBot`). Au prochain passage du workflow **Commandes Telegram**, il répond « Scan en cours », exécute une vérification des **favoris actifs publiés**, puis envoie « Scan terminé » et les articles actuellement en promotion : nom, prix actuel, prix de base et lien. Les promotions déjà présentes au premier relevé sont incluses dans ce bilan demandé ; cela ne change pas la règle des alertes automatiques de baisse.
+
+« Aucun article en promo » est envoyé seulement si tous les favoris actifs ont été vérifiés pendant ce scan, avec une comparaison de prix valide. En cas de blocage, erreur, article différé ou prix de base absent, le résultat est explicitement incomplet. Les vieux prix ne sont pas présentés comme des promotions nouvellement vérifiées. Les pauses et robots.txt sont respectés : la commande ne contourne pas un blocage.
+
+La commande n’est pas instantanée : elle dépend de la lecture différée des messages par Actions. Le problème de planification connu peut aussi bloquer cette lecture. Un seul scan par passage est autorisé ; une demande est enregistrée comme consommée avant le lancement afin de ne pas répéter un scan automatiquement si une réponse Telegram échoue. Si l’exécution est interrompue, consulter /logs et Actions avant de renvoyer volontairement /scan.
+
+Les workflows de commandes et de scanner partagent désormais le groupe de concurrence `uniqlo-monitor` pour protéger l’historique chiffré. Ne pas lancer un autre lecteur getUpdates. Aucun nouveau secret ni changement d’extension requis.
