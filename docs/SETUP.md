@@ -133,3 +133,13 @@ Le scan planifié vise 5 minutes entre lancements, sans ponctualité garantie. L
 | Plus de lancement automatique | Vérifier l'activation du workflow et une éventuelle désactivation après 60 jours sans activité |
 
 Ne jamais copier les secrets dans une issue publique ou les logs. Le code ne contient aucun mécanisme de contournement des blocages UNIQLO.
+
+## Commande Telegram `/logs`
+
+Dans la conversation privée de votre bot, envoyer `/logs`. Le workflow **Commandes Telegram** est configuré pour consulter les messages toutes les cinq minutes demandées, à :04, :09, …, :59, avec les délais/omissions possibles de GitHub. Il utilise les secrets existants et `UA_TELEGRAM_ENABLED=true`. Aucun serveur permanent ni nouveau jeton nécessaire.
+
+La réponse présente un résumé diagnostique : dernière tentative et lecture valide reçue (heures de Paris), nombres de réussites/erreurs/différés du dernier état sauvegardé, statut d’erreur/pause et cinq dernières exécutions Actions avec liens. Les logs bruts se consultent sur GitHub. Les valeurs d’erreur libres, noms d’articles et identifiants sensibles ne sont pas recopiés. Les données sauvegardées peuvent être anciennes, même si un scan plus récent a eu lieu.
+
+Seuls les messages de la conversation privée et de l’utilisateur correspondant à `TELEGRAM_CHAT_ID` sont autorisés. Le curseur de traitement est chiffré séparément dans `monitor-data:data/telegram-commands.enc.json` ; l’historique scanner reste intact. Ne pas faire tourner un autre lecteur `getUpdates` ou un webhook en parallèle. Au maximum trois réponses par passage ; en cas d’interruption après envoi et avant sauvegarde, une réponse peut exceptionnellement être répétée. Telegram ne conserve les messages à récupérer que pendant une durée limitée (24 h).
+
+**Cette commande ne lance aucun scan UNIQLO.** L’absence de lancements planifiés constatée sur le dépôt peut aussi empêcher une réponse automatique. Sa présence dans le code ne prouve pas une exécution réelle ; aucun lancement manuel n’est effectué par l’agent conformément à la demande utilisateur.

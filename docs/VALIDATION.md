@@ -51,3 +51,7 @@ Modification de diagnostic publiée au commit `9fe139e` : statut Telegram visibl
 ## Limite actuelle : calendrier non démontré
 
 Vérification à la suite de la capture utilisateur : 7 exécutions dans l’historique public de Scanner UNIQLO, toutes par commit ou lancement manuel, aucune par `schedule`. Workflow déclaré actif, défaut `main`, dépôt non forké et cron `2-57/5 * * * *` présent sur `main`. Dernière exécution visible : `40805039423` (publication de favoris). La cadence automatique toutes les cinq minutes reste **non vérifiée**, cause de l’absence de déclenchements planifiés non établie. Les succès précédents valident seulement les déclencheurs et étapes effectivement observés.
+
+## Commande `/logs`
+
+40 tests Python et 19 tests JavaScript réussis localement après ajout de huit tests du lecteur de commandes. API simulées : contrôle de l’expéditeur privé, suffixe de commande, non-retraitement, réessai après échec, limitation/batch, diagnostics sans données personnelles, stockage chiffré séparé et erreurs sans jeton. Aucun appel réel Telegram, aucun scan forcé. Le workflow de commandes est configuré pour des passages différés et dépend du scheduler GitHub dont les lancements restent non démontrés. La réponse réelle à /logs n’est pas encore constatée.
