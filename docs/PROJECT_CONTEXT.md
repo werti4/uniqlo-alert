@@ -160,3 +160,5 @@ Demande utilisateur : tous les favoris avec prix et pastille rouge pour les prom
 L’utilisateur a demandé si un scan avant chaque /favoris serait coûteux. Recommandation communiquée : garder /favoris en lecture seule ; demander /scan puis /favoris lorsqu’une actualisation est souhaitée. Le travail de scan est principalement côté GitHub/UNIQLO et soumis aux pauses ; pas de scan implicite ajouté à /favoris.
 
 Validation locale : 57 tests Python, 27 tests Node réussis, dont six nouveaux tests sur promotions, prix manquants/anciens/erreurs, liste vide/illisible, 50 favoris paginés, accès propriétaire et absence de scan. Cloudflare toujours non déployé selon le dernier état confirmé. Aucun scan ni message réel forcés. Inventaire courant : /logs, /scan, /favoris.
+
+/favoris publié (`f99c27d`), [job CI 40854426246](https://github.com/werti4/uniqlo-alert/actions/runs/40854426246) terminé avec toutes les étapes réussies, 57 tests Python et 27 tests Node. Catalogue inclus dans l’assemblage Wrangler --dry-run réussi. Aucun scan ni déploiement réel effectués ; la commande sera active après configuration Cloudflare et validation d’une réponse privée réelle.

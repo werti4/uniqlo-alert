@@ -85,3 +85,5 @@ Contrat et catalogue des commandes publiés au commit `128fff1`. [Job CI 4085328
 ## `/favoris`
 
 57 tests Python, 27 tests Node réussis localement. Six nouveaux tests : promotions/prix/date, prix absents et erreurs anciennes sans fuite du texte brut, pagination 50 favoris, différence liste vide/échec de lecture, liste conservée quand les relevés sont inaccessibles, autorisation privée sans scan. Le catalogue partagé inclut la commande et le test Cloudflare couvre automatiquement ce nom et son suffixe de bot. Aucun déploiement Cloudflare ni réponse réelle /favoris vérifiés.
+
+/favoris publié (`f99c27d`), [job CI 40854426246](https://github.com/werti4/uniqlo-alert/actions/runs/40854426246) terminé avec toutes les étapes réussies, 57 tests Python et 27 tests Node. Catalogue inclus dans l’assemblage Wrangler --dry-run réussi. Aucun scan ni déploiement réel effectués ; la commande sera active après configuration Cloudflare et validation d’une réponse privée réelle.
