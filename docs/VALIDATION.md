@@ -6,7 +6,7 @@
 
 | Contrôle | Preuve disponible | Limite |
 | --- | --- | --- |
-| Tests Python | 27 réussis localement ; CI réussie | Fixtures synthétiques, pas une preuve de collecte réelle |
+| Tests Python | 32 réussis localement et en CI après ajout du diagnostic Telegram | Fixtures synthétiques, pas une preuve de collecte réelle |
 | Tests JavaScript | 19 réussis localement ; CI réussie | Incluent chiffrement Python/JS, concurrence et protection des données |
 | Popup sous CSP | Test `tools/check_quick_ui.cjs` réussi localement et en CI | Vrai HTML et CSP, API Chrome simulées ; installation réelle interdite dans le cloud |
 | Régression détectée | Le test échoue sur une copie de 1.1.0, réussit sur le correctif | Le défaut historique venait du CSS inline bloqué |
@@ -41,3 +41,5 @@ Suivre [DEVELOPMENT.md](DEVELOPMENT.md). Consigner le commit testé, les command
 La configuration Telegram est désormais demandée ; l’utilisateur indique ne pas encore avoir créé son bot. Nouveau diagnostic manuel **Tester Telegram** : vérification du bot, vérification de la conversation privée, envoi d’un message explicitement marqué test. Aucune modification du scanner ou de l’état chiffré.
 
 Validation locale : **32 tests Python**, dont 5 nouveaux couvrant envoi confirmé, secrets manquants, refus des groupes/mauvaise identité, confidentialité des erreurs et confirmation incomplète ; **19 tests JavaScript** réussis. API Telegram simulée, aucun envoi réel. La réception iPhone et l’activation des alertes automatiques restent à effectuer après création du bot et enregistrement des secrets.
+
+Diagnostic publié au commit `3389583`, [CI 40802430270 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40802430270). Aucun test réel Telegram exécuté : bot non encore créé selon la dernière réponse utilisateur.

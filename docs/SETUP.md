@@ -97,7 +97,7 @@ Après avoir enregistré les deux secrets, ouvrir [Tester Telegram](https://gith
 
 Lors de l’activation automatique, les alertes encore en attente dans l’état chiffré peuvent être livrées au prochain scan : ce ne sont pas forcément des baisses survenues à l’instant.
 
-Les scans de prix n’exigent pas Telegram. Les notifications sont désactivées par défaut. Une fois le bot prêt et les deux secrets enregistrés, créer la **variable Actions** `UA_TELEGRAM_ENABLED` avec la valeur `true` dans les paramètres du dépôt → Secrets and variables → Actions → Variables. Sans cette activation explicite, le workflow ne transmet pas les identifiants Telegram au scanner et aucun message n’est envoyé.
+Une fois le message de test reçu et les deux secrets enregistrés, créer la **variable Actions** `UA_TELEGRAM_ENABLED` avec la valeur `true` dans les paramètres du dépôt → Secrets and variables → Actions → Variables. Sans cette activation explicite, le workflow ne transmet pas les identifiants Telegram au scanner et aucun message n’est envoyé.
 
 ## 5. Ajouter et publier les favoris
 
