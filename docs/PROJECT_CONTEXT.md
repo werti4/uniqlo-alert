@@ -10,7 +10,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 - Ajout/retrait en un clic de l’article ouvert, sur une fiche France ; aperçu favoris/baisses/alertes et accès au tableau de bord complet.
 - 50 favoris maximum. Les changements sont locaux jusqu’à **Publier les favoris**. Pas de publication automatique implicite.
 - GitHub Actions demande un scan toutes les **5 minutes** (`2-57/5 * * * *`), ainsi qu’après publication des favoris. Retards et omissions possibles ; aucun temps réel garanti.
-- **Test Telegram reçu par l’utilisateur** ; notifications automatiques facultatives, activation `UA_TELEGRAM_ENABLED=true` encore à confirmer. Ne pas les demander comme préalable aux relevés.
+- **Test Telegram reçu par l’utilisateur** ; notifications automatiques facultatives, activation `UA_TELEGRAM_ENABLED=true` déclarée effectuée par l’utilisateur, prise en compte par le prochain scan à vérifier. Ne pas les demander comme préalable aux relevés.
 - Hors périmètre actuel : tout le catalogue, achat automatique, connexion UNIQLO, hébergement payant, contournement de protections, autres projets personnels.
 
 ## État vérifié et limites
@@ -25,7 +25,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 | Historique distant | Branche `monitor-data`, commit observé `5981a24`, fichier `data/state.enc.json` | État chiffré sauvegardé par le scanner |
 | Exécution scanner | [40801261438](https://github.com/werti4/uniqlo-alert/actions/runs/40801261438) : contrôle, installation et **Scanner les favoris exécutés avec succès** | Ce ne sont plus des étapes ignorées ; les compteurs de lectures n’ont pas pu être lus publiquement |
 | Prix réels dans Chrome | Non constatés par l’agent | Vérifier prix, date de lecture et erreurs par article après actualisation de l’extension |
-| Telegram / iPhone | Test [40804020828](https://github.com/werti4/uniqlo-alert/actions/runs/40804020828) réussi ; utilisateur confirme avoir reçu le message | Liaison réelle confirmée ; activation automatique et première alerte de prix restent à confirmer |
+| Telegram / iPhone | Test [40804020828](https://github.com/werti4/uniqlo-alert/actions/runs/40804020828) réussi ; utilisateur confirme avoir reçu le message | Liaison réelle confirmée ; activation automatique déclarée par l’utilisateur, scan après activation et première alerte de prix à vérifier |
 | Promotions du site actuel | Lecture directe bloquée par le réseau cloud lors du dernier essai | Offres temporaires, prix membres et dates restent à examiner sur des fiches réelles |
 
 **Ne plus annoncer « aucun favori publié » ou « scan ignoré » sur la base des anciennes exécutions.** Le premier workflow `40799781946` avait ignoré le scan ; l’exécution ultérieure ci-dessus l’a exécuté. À l’inverse, un workflow vert et une branche de données ne prouvent pas combien d’articles ont été lus ni la livraison d’une notification.
@@ -79,7 +79,7 @@ Aucune valeur de secret dans le dépôt, les logs, le paquet, les captures parta
 2. Pour valider le fonctionnement personnel : actualiser les données GitHub dans l’extension, vérifier au moins un prix valide, sa date et les erreurs éventuelles. Relever les compteurs du scan si disponibles, sans afficher les favoris en clair.
 3. Confirmer le rendu corrigé dans le Chrome utilisateur ; ne pas lui faire recréer un jeton ou une clé si la connexion fonctionne déjà.
 4. Examiner les mentions réelles de promotion lorsque l’accès le permet. Les cas synthétiques actuels ne valident pas les offres membres/temporaires.
-5. Faire enregistrer `UA_TELEGRAM_ENABLED=true` dans les variables Actions, puis vérifier un scan et la livraison des alertes lorsqu’une baisse ou une alerte en attente existe. Le message de test est déjà reçu : ne pas recréer le bot, ses secrets ou la clé de chiffrement.
+5. L’utilisateur confirme avoir enregistré `UA_TELEGRAM_ENABLED=true`. Vérifier un scan et la livraison des alertes lorsqu’une baisse ou une alerte en attente existe. Le message de test est déjà reçu : ne pas recréer le bot, ses secrets ou la clé de chiffrement.
 
 Guides complémentaires : [installation et configuration](SETUP.md), [preuves et limites de validation](VALIDATION.md), [historique archivé](HISTORY.md).
 
@@ -87,6 +87,6 @@ Guides complémentaires : [installation et configuration](SETUP.md), [preuves et
 
 Le bot a été créé et les deux secrets ont permis un test réel réussi. Le workflow manuel `.github/workflows/test-telegram.yml` vérifie getMe et getChat privé, puis envoie un seul message de test via `tools/telegram_check.py`. Aucune lecture de favori, aucune clé de chiffrement, aucune modification d’historique ; aucune exécution automatique au push ou sur calendrier. Les erreurs ne divulguent ni URL contenant le jeton, ni réponse API personnelle. Test possible avant l’activation des alertes normales. L’activation normale pourra ensuite livrer les anciennes alertes encore en attente.
 
-Validation locale de la préparation : 32 tests Python (dont 5 tests du diagnostic) et 19 tests JavaScript réussis, avec réseau Telegram simulé. Depuis, un test réel a été effectué : **Tester Telegram 40804020828**, succès, et réception explicitement confirmée par l’utilisateur le 29 octobre 2026. Le message est identifié comme test, sans baisse de prix. La variable Actions `UA_TELEGRAM_ENABLED=true` reste à enregistrer/confirmer avant d’annoncer les alertes automatiques activées. Ne pas recréer la clé de chiffrement ni le jeton GitHub existants.
+Validation locale de la préparation : 32 tests Python (dont 5 tests du diagnostic) et 19 tests JavaScript réussis, avec réseau Telegram simulé. Depuis, un test réel a été effectué : **Tester Telegram 40804020828**, succès, et réception explicitement confirmée par l’utilisateur le 29 octobre 2026. Le message est identifié comme test, sans baisse de prix. L’utilisateur confirme désormais avoir enregistré `UA_TELEGRAM_ENABLED=true` ; la prise en compte par un scan reste à vérifier. Ne pas recréer la clé de chiffrement ni le jeton GitHub existants.
 
 Diagnostic publié sur `main` au commit `3389583`. [CI 40802430270 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40802430270), incluant les 32 tests Python, 19 tests JS, le contrôle navigateur et le paquet. Le workflow manuel [Tester Telegram](https://github.com/werti4/uniqlo-alert/actions/workflows/test-telegram.yml) est disponible ; il a maintenant été lancé avec succès avec les secrets réels. Ne pas confondre ce test manuel avec la livraison automatique d’une alerte de baisse.

@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Vérifier la configuration sans exposer de secret
+      - name: "${{ vars.UA_TELEGRAM_ENABLED == 'true' && 'Vérifier la configuration — Telegram activé' || 'Vérifier la configuration — Telegram désactivé' }}"
         id: configuration
         env:
           UA_ENCRYPTION_KEY: ${{ secrets.UA_ENCRYPTION_KEY }}
@@ -61,6 +61,8 @@ jobs:
                   summary.write('## Configuration minimale présente\n\n')
                   summary.write('Le scanner peut démarrer ; son résultat est indiqué dans les étapes suivantes.\n')
               telegram = bool(os.environ.get('TELEGRAM_BOT_TOKEN') and os.environ.get('TELEGRAM_CHAT_ID'))
+              if telegram:
+                  summary.write('\n**Telegram configuré pour ce scan.** Les identifiants sont présents ; seule une livraison confirmée prouve l’envoi d’une alerte.\n')
               if not telegram:
                   summary.write('\n**Telegram non activé.** Les relevés et baisses restent consultables dans l’extension. Pour activer Telegram plus tard : variable Actions UA_TELEGRAM_ENABLED=true et secrets TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID.\n')
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
