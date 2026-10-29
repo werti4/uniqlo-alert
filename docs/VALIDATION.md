@@ -73,3 +73,5 @@ Préparation webhook publiée (`5c74690`, ajustement de confidentialité `e3d18c
 ## Préparation du calendrier horaire Cloudflare
 
 49 tests Python et 26 tests Node réussis localement. Les nouveaux cas vérifient un dispatch scan.yml par heure confirmée, aucun message de routine Telegram, switch désactivé, route horaire HTTP non exposée et absence de validation d’un dispatch refusé. Cron `17 * * * *`, HOURLY_SCAN_ENABLED="false" par défaut. Service non déployé : aucun événement Scheduled Cloudflare ni scan horaire réel validé. Ancien cron GitHub encore publié, doublons possibles s’il reprend après activation de Cloudflare ; migration après validation externe.
+
+[CI 40846436147 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40846436147), commit `ff9214e`. Assemblage Wrangler --dry-run validé avec le cron horaire et le switch désactivé. Aucun événement horaire réel ni déploiement validé.

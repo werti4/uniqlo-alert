@@ -9,7 +9,7 @@ Extension Chrome personnelle et gratuite pour les **favoris UNIQLO France, EUR**
 - Petite fenêtre automatique sur `www.uniqlo.com`, réductible, et popup depuis l’icône Chrome.
 - Ajout/retrait en un clic de l’article ouvert, sur une fiche France ; aperçu favoris/baisses/alertes et accès au tableau de bord complet.
 - 50 favoris maximum. Les changements sont locaux jusqu’à **Publier les favoris**. Pas de publication automatique implicite.
-- GitHub Actions demande un scan toutes les **5 minutes** (`2-57/5 * * * *`), ainsi qu’après publication des favoris. Retards et omissions possibles ; aucun temps réel garanti. À la dernière vérification, aucun lancement `schedule` observé (voir diagnostic ci-dessous).
+- Objectif actuel : Cloudflare demande **un scan par heure**, plus `/scan` Telegram à la demande. Préparé, non déployé. L’ancien calendrier GitHub de 5 minutes reste publié jusqu’à la bascule ; son exécution automatique n’était pas démontrée.
 - **Test Telegram reçu par l’utilisateur** ; notifications automatiques facultatives, activation `UA_TELEGRAM_ENABLED=true` confirmée par GitHub dans le scan 40804764809. Ne pas les demander comme préalable aux relevés.
 - Hors périmètre actuel : tout le catalogue, achat automatique, connexion UNIQLO, hébergement payant, contournement de protections, autres projets personnels.
 
@@ -140,3 +140,5 @@ L’utilisateur souhaite désormais au moins une demande de scan automatique par
 Activation explicite requise : HOURLY_SCAN_ENABLED="true" après déploiement et secrets. Valeur par défaut "false" pour ne pas annoncer de service actif prématurément. Cloudflare, compte et secrets toujours indisponibles ici : aucune activation ni vrai scan horaire. L’ancien cron GitHub cinq minutes n’est pas modifié à ce stade, pour préserver le fonctionnement existant et éviter un scan de push ; il faudra retirer uniquement on.schedule après validation Cloudflare si une seule horloge est souhaitée. GitHub affichera workflow_dispatch pour les lancements automatiques issus de Cloudflare.
 
 Validation locale : 49 tests Python, 26 tests Node réussis, dont trois tests du calendrier horaire (dispatch vers scanner distinct des commandes, déduplication, switch désactivé, route publique refusée, échec non enregistré). Le service reste préparé et non hébergé ; les disponibilités externes et le blocage UNIQLO peuvent empêcher un scan complet. Aucun scan réel lancé par l’agent.
+
+Préparation horaire publiée (`ff9214e`), [CI 40846436147 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40846436147), 49 tests Python et 26 tests Node. Wrangler --dry-run réussi avec le binding Durable Object et HOURLY_SCAN_ENABLED=false. Aucun déploiement, événement horaire réel ni scan forcé. Étape externe restante : compte Cloudflare, secrets, déploiement et activation explicite.
