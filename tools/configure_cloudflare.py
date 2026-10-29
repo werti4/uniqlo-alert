@@ -24,7 +24,8 @@ def run():
         raise ValueError('Variable Actions UA_TELEGRAM_ENABLED doit valoir true.')
     secret = os.environ['UA_TELEGRAM_WEBHOOK_SECRET'].strip()
     if not re.fullmatch(r'[A-Za-z0-9_-]{32,256}', secret):
-        raise ValueError('Format du secret webhook incorrect : 32 à 256 lettres/chiffres/_/-.')
+        reason = 'trop court (moins de 32 caractères)' if len(secret) < 32 else 'trop long (plus de 256 caractères)' if len(secret) > 256 else 'caractères non autorisés (lettres/chiffres/_/- uniquement)'
+        raise ValueError('Format du secret Actions UA_TELEGRAM_WEBHOOK_SECRET incorrect : ' + reason + '.')
     verify_only = os.getenv('VERIFY_ONLY') == 'true'
     payload = {} if verify_only else {'root': ROOT, 'enabled': True, 'proof': hmac.new(secret.encode(), (os.environ['TELEGRAM_BOT_TOKEN'].strip()+'\n'+os.environ['TELEGRAM_CHAT_ID'].strip()).encode(), hashlib.sha256).hexdigest()}
     request = urllib.request.Request(ROOT + ('/configuration-status' if verify_only else '/configure'), data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json', 'User-Agent': 'UniqloAlertBridge/1.0', 'X-Bridge-Secret': secret}, method='POST')

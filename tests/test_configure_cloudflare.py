@@ -30,6 +30,14 @@ class ConfigureTests(unittest.TestCase):
         with patch.dict('os.environ',{**ENV,'VERIFY_ONLY':'true','VERIFY_HOUR':'43'},clear=True),patch('urllib.request.urlopen',return_value=response):
             with self.assertRaises(ValueError):run()
 
+    def test_invalid_format_reports_only_category_not_value(self):
+        for value, category in [('short-private', 'trop court'), ('x'*257, 'trop long'), ('a'*40+':', 'caractères non autorisés')]:
+            with patch.dict('os.environ', {**ENV, 'UA_TELEGRAM_WEBHOOK_SECRET':value}, clear=True), patch('urllib.request.urlopen') as net:
+                with self.assertRaises(ValueError) as error: run()
+                self.assertIn(category, str(error.exception))
+                self.assertNotIn(value, str(error.exception))
+                net.assert_not_called()
+
     def test_network_error_never_discloses_tokens(self):
         with patch.dict('os.environ',ENV,clear=True),patch('urllib.request.urlopen',side_effect=RuntimeError('private-token')):
             with self.assertRaises(ValueError) as error:run()
