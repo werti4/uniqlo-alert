@@ -61,3 +61,5 @@ Commande /logs publiée au commit `43eaf3c`. [CI 40806326643 réussie](https://g
 ## Commande `/scan`
 
 47 tests Python et 19 tests JavaScript réussis localement ; sept nouveaux tests couvrent la demande privée consommée avant exécution, un seul scan par passage, absence de répétition après échec, promotions dès le premier relevé, données anciennes/erreurs/base absente, favoris pausés, sauvegarde avant bilan et erreurs sans secrets. API et lecture UNIQLO simulées, aucun scan réel ni lancement manuel effectué par l’agent. Le déploiement ne modifie aucun fichier couvert par les filtres de push du scanner. La réponse effective à /scan et le déclenchement planifié du lecteur restent à observer.
+
+Commande /scan publiée au commit `fe3cc9f`, [CI 40841802154 réussie](https://github.com/werti4/uniqlo-alert/actions/runs/40841802154), 47 tests Python, 19 tests JS et contrôle navigateur inclus. Aucun scan réel ni workflow de commandes déclenché par l’agent. Les messages de progression et le bilan réel restent à constater après une commande utilisateur prise en charge par Actions.
