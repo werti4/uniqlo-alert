@@ -2,11 +2,21 @@
 
 État consolidé le 29 octobre 2026 (Europe/Paris). Les anciennes validations et leurs limites initiales sont conservées dans [HISTORY.md](HISTORY.md). Ce document ne constitue pas une nouvelle exécution des tests.
 
+## Premier déploiement Cloudflare — 29 octobre 2026, 11:20 Paris
+
+Worker `uniqlo-telegram-webhook`, URL https://uniqlo-telegram-webhook.uniqlo-alert-werti4.workers.dev, version `5a4568a5-a171-4e64-8e1d-48fef52924f7` déployée à 100 %. API Cloudflare : migration v1, binding INBOX → TelegramInbox, namespace SQLite 84ca5eaff5764f178aa74c2854fd70be, route workers.dev active et cron 17 * * * * confirmés. Variables dépôt/branche présentes ; HOURLY_SCAN_ENABLED=false. Liste des secrets Worker vide. Aucun abonnement créé/modifié ; lecture de facturation refusée par OAuth, palier Free à contrôler dans le tableau de bord.
+
+62 tests Python et 27 tests JS réussis ; Wrangler 4.155.0 dry-run réussi. Régression couverte : accusé avant dispatch GitHub, conservation de la commande après refus de dispatch et accusé non répété lors du réessai. Les API Telegram/GitHub sont simulées. Aucun scan ni message réel déclenché par l’agent. Extension, clé et données chiffrées non modifiées.
+
+HTTP depuis ce cloud : racine et POST sans secret /telegram et /pending ont reçu un 503 du proxy en amont ; aucune réponse applicative exploitable. Le routage HTTPS et la file authentifiée restent à confirmer depuis un réseau utilisateur après saisie des secrets. Aucun getWebhookInfo réel sans jeton actuel disponible ; ni webhook, ni commande réelle, ni dispatch horaire naturel validés. Calendriers GitHub conservés jusqu’à validation de la bascule. Le [guide Cloudflare](../telegram-webhook/README.md) donne les manipulations masquées restantes et le retour arrière.
+
+GitHub consulté en lecture seule : dernier scanner 40840801906 réussi à 09:15 Paris, étape « Telegram activé » réussie ; ne prouve pas la valeur actuelle ni la liaison Cloudflare. Aucun lecteur de commandes actif dans les 33 runs consultés. Les entrées de préparation plus bas sont historiques et ne remplacent pas cet état.
+
 ## Code publié 1.1.2
 
 | Contrôle | Preuve disponible | Limite |
 | --- | --- | --- |
-| Tests Python | 51 réussis localement et dans le job CI du catalogue Cloudflare | Fixtures synthétiques, pas une preuve de collecte réelle |
+| Tests Python | 62 réussis localement le 29/10 après premier déploiement Cloudflare | Fixtures synthétiques, pas une preuve de collecte réelle |
 | Tests JavaScript | 27 réussis localement et dans le job CI du catalogue Cloudflare | Incluent chiffrement Python/JS, concurrence et protection des données |
 | Popup sous CSP | Test `tools/check_quick_ui.cjs` réussi localement et en CI | Vrai HTML et CSP, API Chrome simulées ; installation réelle interdite dans le cloud |
 | Régression détectée | Le test échoue sur une copie de 1.1.0, réussit sur le correctif | Le défaut historique venait du CSS inline bloqué |

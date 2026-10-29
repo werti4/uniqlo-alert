@@ -1,6 +1,6 @@
 # Contrat des commandes Telegram — Cloudflare obligatoire
 
-Décision utilisateur du 29 octobre 2026 : **toutes les commandes Telegram, actuelles et futures, doivent passer par Cloudflare**. Cette règle prime sur les anciens exemples de polling ou de lancement manuel d’Actions. Le service est préparé dans le dépôt mais n’est pas encore déployé ; l’utilisateur confirme ne pas avoir lancé la configuration Cloudflare.
+Décision utilisateur du 29 octobre 2026 : **toutes les commandes Telegram, actuelles et futures, doivent passer par Cloudflare**. Cette règle prime sur les anciens exemples de polling ou de lancement manuel d’Actions. Le Worker est déployé depuis le 29 octobre 2026 ; secrets, webhook et dispatch horaire restent inactifs jusqu’à la saisie sécurisée des accès. Voir PROJECT_CONTEXT.md et le guide Cloudflare pour l’état vérifié.
 
 ## Source de vérité unique
 
@@ -36,4 +36,4 @@ Le polling getUpdates conservé dans Python est uniquement un mode de transition
 
 ## État actuel et passage de relais
 
-Catalogue : /logs, /scan et /favoris. Tests locaux : 57 Python et 27 Node réussis avec services simulés. Assemblage Worker à vérifier avec Wrangler --dry-run après modification de ses imports. Déploiement, secrets Cloudflare, webhook et test réel restent à effectuer. Pour reprendre dans une autre conversation, lire AGENTS.md, PROJECT_CONTEXT.md, ce contrat et telegram-webhook/README.md. Ne pas repartir d’un ancien ZIP ou recréer les identifiants déjà fonctionnels.
+Catalogue : /logs, /scan et /favoris. Tests locaux : 57 Python et 27 Node réussis avec services simulés. Assemblage Worker à vérifier avec Wrangler --dry-run après modification de ses imports. Déploiement initial effectué ; secrets Cloudflare, liaison Actions, webhook et test réel restent à effectuer. Pour reprendre dans une autre conversation, lire AGENTS.md, PROJECT_CONTEXT.md, ce contrat et telegram-webhook/README.md. Ne pas repartir d’un ancien ZIP ou recréer les identifiants déjà fonctionnels.

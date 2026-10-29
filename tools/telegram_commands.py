@@ -61,7 +61,7 @@ def number(value):
     return value if type(value) is int and 0 <= value <= 100000 else 0
 
 
-def diagnostics(state, runs, repo, *, state_ok=True, runs_ok=True):
+def diagnostics(state, runs, repo, *, state_ok=True, runs_ok=True, webhook_mode=False):
     stats = state.get('scanStats') or {}
     if not isinstance(stats, dict):
         stats = {}
@@ -87,7 +87,7 @@ def diagnostics(state, runs, repo, *, state_ok=True, runs_ok=True):
     if isinstance(run_url, str) and re.fullmatch(re.escape(f'https://github.com/{repo}/actions/runs/') + r'\d+', run_url):
         lines.append('Exécution du dernier état : ' + run_url)
     lines += ['', 'Dernières exécutions du workflow Scanner UNIQLO :']
-    events = {'schedule': 'planifié', 'push': 'commit', 'workflow_dispatch': 'manuel'}
+    events = {'schedule': 'planifié', 'push': 'commit', 'workflow_dispatch': 'dispatch (Cloudflare ou manuel)'}
     statuses = {'success': 'réussi', 'failure': 'échec', 'cancelled': 'annulé', 'skipped': 'ignoré', 'timed_out': 'délai dépassé'}
     for run in runs[:5]:
         run_id = run.get('id')
@@ -99,6 +99,8 @@ def diagnostics(state, runs, repo, *, state_ok=True, runs_ok=True):
         lines.append('⚠️ Historique Actions indisponible.')
     elif not runs:
         lines.append('Aucune exécution disponible.')
+    elif webhook_mode:
+        lines.append('Mode webhook : Cloudflare utilise workflow_dispatch. Vérifier les événements Scheduled dans Cloudflare pour confirmer la cadence horaire ; ces runs seuls ne prouvent pas leur origine.')
     elif not any(run.get('event') == 'schedule' for run in runs):
         lines.append('⚠️ Aucun lancement planifié parmi ces exécutions. Cadence automatique non confirmée.')
     lines += ['', 'Les dates viennent du dernier état sauvegardé ; elles peuvent être anciennes. Un workflow vert ne garantit pas une lecture par article.']
@@ -249,7 +251,7 @@ def run():
                     raise ValueError()
             except Exception:
                 runs, runs_ok = [], False
-            cache.append(diagnostics(state, runs, repo, state_ok=state_ok, runs_ok=runs_ok))
+            cache.append(diagnostics(state, runs, repo, state_ok=state_ok, runs_ok=runs_ok, webhook_mode=bool(webhook_url)))
         return cache[0]
     def send(text):
         result = telegram(token, 'sendMessage', {'chat_id': chat_id, 'text': text, 'link_preview_options': {'is_disabled': True}})

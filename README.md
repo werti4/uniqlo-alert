@@ -26,7 +26,7 @@ L'installation locale évite les frais de publication dans le Chrome Web Store. 
 
 ## Fréquence et fiabilité
 
-Le workflow vise un lancement toutes les **5 minutes**, à `:02`, `:07`, `:12`, …, `:57`. GitHub peut retarder ou omettre un lancement. Le scan parcourt les favoris progressivement : la fraîcheur réelle est indiquée par article. En cas de limite UNIQLO, les scans se mettent en attente plutôt que d'insister.
+La cible est un scan horaire demandé par Cloudflare à `:17`. Le Worker est déployé ; ses secrets, le webhook et le switch horaire restent à activer selon [le guide Cloudflare](telegram-webhook/README.md). Pendant cette transition, l’ancien calendrier GitHub toutes les **5 minutes** reste publié. GitHub peut retarder ou omettre un lancement. Le scan parcourt les favoris progressivement : la fraîcheur réelle est indiquée par article. En cas de limite UNIQLO, les scans se mettent en attente plutôt que d'insister.
 
 Cette configuration est un compromis initial à mesurer. Elle n'offre ni temps réel garanti, ni garantie contre les blocages. Une page ou les données UNIQLO peuvent changer ; une lecture invalide conserve le dernier prix connu et n'est jamais interprétée comme une promotion ou une rupture.
 

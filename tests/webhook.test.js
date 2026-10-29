@@ -27,7 +27,8 @@ test('persistent queue retains commands across GitHub runs and deduplicates deli
   await call('enqueue',{id:2,command:'/scan'});await call('enqueue',{id:2,command:'/scan'});await call('enqueue',{id:3,command:'/logs'});
   assert.deepEqual((await (await call('pending',{})).json()).commands,[{id:2,command:'/scan'},{id:3,command:'/logs'}]);
   assert.equal(requests.filter(x=>x.url.includes('sendMessage')).length,2);
-  assert.deepEqual(requests[0].body,{ref:'main'});
+  assert.ok(requests[0].url.includes('sendMessage'));
+  assert.deepEqual(requests.find(x=>x.url.includes('api.github.com')).body,{ref:'main'});
   await call('ack',{through:2});assert.equal(ctx.data.get('queue').length,1);
   await call('ack',{through:3});assert.equal(ctx.data.get('queue').length,0);
   await call('enqueue',{id:2,command:'/scan'});assert.equal(ctx.data.get('queue').length,0);
@@ -35,10 +36,15 @@ test('persistent queue retains commands across GitHub runs and deduplicates deli
 });
 test('a failed dispatch leaves a durable command and can be retried',async()=>{
  const original=globalThis.fetch;const ctx=context();const inbox=new TelegramInbox(ctx,env);
+ let receipts=0;
  try{
-  globalThis.fetch=async()=>new Response(null,{status:403});
+  globalThis.fetch=async url=>{if(url.includes('sendMessage')){receipts++;return Response.json({ok:true});}return new Response(null,{status:403});};
   await assert.rejects(inbox.fetch(new Request('https://inbox/enqueue',{method:'POST',body:JSON.stringify({id:5,command:'/scan'})})));
   assert.equal(ctx.data.get('queue')[0].id,5);
+  assert.equal(ctx.data.get('queue')[0].receipt,true);
+  globalThis.fetch=async url=>{assert.ok(url.startsWith('https://api.github.com'));return new Response(null,{status:204});};
+  const response=await inbox.fetch(new Request('https://inbox/enqueue',{method:'POST',body:JSON.stringify({id:5,command:'/scan'})}));
+  assert.equal(response.status,200);assert.equal(receipts,1);
  }finally{globalThis.fetch=original;}
 });
 

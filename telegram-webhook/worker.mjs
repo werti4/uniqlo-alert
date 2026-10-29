@@ -98,8 +98,9 @@ export class TelegramInbox {
       }
       // Durable queue survives retries and replaced pending GitHub runs.
       await this.ctx.storage.setAlarm(Date.now() + 600000);
-      await this.dispatch();
+      // Acknowledge Telegram before waiting for GitHub's dispatch endpoint.
       if (!item.receipt) { await this.receipt(item.command); item.receipt = true; await this.ctx.storage.put('queue', queue); }
+      await this.dispatch();
       return json({ok: true});
     });
   }

@@ -64,6 +64,13 @@ class CommandTests(unittest.TestCase):
         github.api.return_value={'content':{'sha':'newer'}};store.save(8)
         self.assertEqual(github.api.call_args.args[2]['sha'],'old')
 
+    def test_cloudflare_dispatch_is_not_misreported_as_manual_or_missing_github_schedule(self):
+        runs=[{'id':42,'event':'workflow_dispatch','status':'completed','conclusion':'success'}]
+        text=diagnostics({},runs,'owner/repo',webhook_mode=True)
+        self.assertIn('dispatch (Cloudflare ou manuel)',text)
+        self.assertIn('vérifier les événements scheduled',text.lower())
+        self.assertNotIn('Aucun lancement planifié',text)
+
     def test_token_not_exposed_on_network_error(self):
         with patch('urllib.request.urlopen',side_effect=RuntimeError('https://api.telegram.org/botSECRET/sendMessage')):
             with self.assertRaises(RuntimeError) as error:telegram('SECRET','getUpdates',{})
